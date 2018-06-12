@@ -16,20 +16,20 @@
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script>
         var config = {
-            fraction: 1,
+            fraction: .58,
             label: {
                 fraction: '',
-                left: '',
+                left: 'holy dude:',
                 top: '',
-                right: '',
+                right: 'right label',
                 bottom: ''
             },
             topMarker: [],
             bottomMarker: [],
             margin: {
-                left: 30,
+                left: 230,
                 top: 100,
-                right: 0,
+                right: 100,
                 bottom: 0
             },
             width: 300,
@@ -38,6 +38,7 @@
             emptyColor: 'lightgray',
             fractionColor: 'green',
             fractionLabelColor: 'white',
+            labelColor: 'green',
             strokeWidth: 0,
             textSize: 16
         }
@@ -61,8 +62,12 @@
             if (config.label.fraction) {
                 return config.label.fraction;
             } else {
-                return Math.floor(config.fraction * 100) + '%';
+                return Math.round(config.fraction * 100) + '%';
             }
+        }
+
+        var middlePositionText = function() {
+            return config.height - Math.max(2, config.strokeWidth / 2) - (config.height - config.textSize) / 2;
         }
 
         var svg = d3.select('#gauge').append("svg")
@@ -89,11 +94,32 @@
 
         var fractionLabel = svg.append('text')
             .text(fractionLabelText())
-            .attr('y', config.height - Math.max(2, config.strokeWidth / 2) - (config.height - config.textSize) / 2)
+            .attr('y', middlePositionText())
             .attr('fill', 'none')
             .attr('font-family', 'sans-serif')
             .attr('font-size', config.textSize);
         adjustFractionTextPosition(fractionLabel);
+
+        if (config.label.left) {
+            var leftLabel = svg.append('text')
+                .text(config.label.left)
+                .attr('x', -config.textSize / 2)
+                .attr('y', middlePositionText())
+                .attr('text-anchor', 'end')
+                .attr('fill', config.labelColor)
+                .attr('font-family', 'sans-serif')
+                .attr('font-size', config.textSize);
+        }
+
+        if (config.label.right) {
+            var rightLabel = svg.append('text')
+                .text(config.label.right)
+                .attr('x', config.width + config.strokeWidth + config.textSize / 2)
+                .attr('y', middlePositionText())
+                .attr('fill', config.labelColor)
+                .attr('font-family', 'sans-serif')
+                .attr('font-size', config.textSize);
+        }
     </script>
 </body>
 
