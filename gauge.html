@@ -16,8 +16,16 @@
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script>
         var config = {
-            fraction: .35,
+            fraction: .895,
             fractionLabel: '',
+            topMarker: [],
+            bottomMarker: [],
+            margin: {
+                left: 30,
+                top: 100,
+                right: 0,
+                bottom: 0
+            },
             width: 300,
             height: 26,
             borderColor: 'none',
@@ -52,8 +60,10 @@
         }
 
         var svg = d3.select('#gauge').append("svg")
-            .attr('width', config.width)
-            .attr('height', config.height);
+            .attr('width', config.width + config.margin.left + config.margin.right)
+            .attr('height', config.height + config.margin.top + config.margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + config.margin.left + "," + config.margin.top + ")");
 
         var border = svg.append('rect')
             .attr('x', 0)
