@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gauge</title>
+
+
+</head>
+
+<body>
+
+    <div id="gauge"></div>
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script>
+        var config = {
+            fraction: .35,
+            fractionLabel: '',
+            width: 300,
+            height: 26,
+            borderColor: 'none',
+            emptyColor: 'lightgray',
+            fractionColor: 'green',
+            fractionLabelColor: 'white',
+            strokeWidth: 0,
+            textSize: 16
+        }
+
+        var fillWidth = function() {
+            return Math.max(0, Math.min((config.width - config.strokeWidth) * config.fraction, config.width - config.strokeWidth));
+        }
+
+        var adjustFractionTextPosition = function(fractionText) {
+            var length = fractionText.node().getComputedTextLength();
+            if (fillWidth() + config.strokeWidth + length + 1 > config.width - config.strokeWidth) {
+                fractionText.attr('x', fillWidth() - length - config.strokeWidth - 1)
+                    .attr('fill', config.fractionLabelColor);
+            } else {
+                fractionText.attr('x', fillWidth() + config.strokeWidth + 1)
+                    .attr('fill', config.fractionColor);
+            }
+        }
+
+        var fractionTextLabel = function() {
+            if (config.fractionTextLabel) {
+                return config.fractionTextLabel;
+            } else {
+                return Math.floor(config.fraction * 100) + '%';
+            }
+        }
+
+        var svg = d3.select('#gauge').append("svg")
+            .attr('width', config.width)
+            .attr('height', config.height);
+
+        var border = svg.append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', config.width)
+            .attr('height', config.height)
+            .style('stroke-width', config.strokeWidth)
+            .style('stroke', config.borderColor)
+            .style('fill', config.emptyColor);
+
+        var fill = svg.append('rect')
+            .attr('x', config.strokeWidth / 2)
+            .attr('y', config.strokeWidth / 2)
+            .attr('width', fillWidth())
+            .attr('height', config.height - config.strokeWidth)
+            .style('fill', config.fractionColor);
+
+        var fractionText = svg.append('text')
+            .text(fractionTextLabel())
+            .attr('y', config.height - Math.max(2, config.strokeWidth / 2) - (config.height - config.textSize) / 2)
+            .attr('fill', 'none')
+            .attr('font-family', 'sans-serif')
+            .attr('font-size', config.textSize);
+        adjustFractionTextPosition(fractionText);
+    </script>
+</body>
+
+</html>
