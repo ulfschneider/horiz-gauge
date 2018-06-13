@@ -17,21 +17,6 @@
     <script>
         var config = {
             fraction: .58,
-            label: {
-                fraction: '',
-                left: 'holy dude:',
-                top: '',
-                right: 'right label',
-                bottom: ''
-            },
-            topMarker: [],
-            bottomMarker: [],
-            margin: {
-                left: 230,
-                top: 100,
-                right: 100,
-                bottom: 0
-            },
             width: 300,
             height: 26,
             borderColor: 'lightgray',
@@ -39,21 +24,52 @@
             fractionColor: 'green',
             fractionLabelColor: 'white',
             labelColor: 'green',
-            strokeWidth: 0,
-            textSize: 16
+            strokeWidth: 4,
+            textSize: 16,
+            margin: {
+                left: 230,
+                top: 100,
+                right: 100,
+                bottom: 0
+            },
+            label: {
+                fraction: '',
+                left: 'holy dude:',
+                top: '',
+                right: 'right label',
+                bottom: ''
+            },
+            topMarker: [{
+                fraction: 0,
+                label: 'G1',
+                color: ''
+            }, {
+                fraction: .1,
+                label: 'G2',
+                color: ''
+            }, {
+                fraction: .8,
+                label: 'G3',
+                color: 'lightgray'
+            }, {
+                fraction: 1,
+                label: 'G4',
+                color: 'lightgray'
+            }],
+            bottomMarker: []
         }
 
-        var fillWidth = function() {
-            return Math.max(0, Math.min((config.width - config.strokeWidth) * config.fraction, config.width - config.strokeWidth));
+        var fractionPosition = function(fraction) {
+            return Math.max(0, Math.min((config.width - config.strokeWidth) * fraction, config.width - config.strokeWidth));
         }
 
         var adjustFractionTextPosition = function(fractionLabel) {
             var length = fractionLabel.node().getComputedTextLength();
-            if (fillWidth() + config.strokeWidth + length + 1 > config.width - config.strokeWidth) {
-                fractionLabel.attr('x', fillWidth() - length - config.strokeWidth - 1)
+            if (fractionPosition(config.fraction) + config.strokeWidth + length + 1 > config.width - config.strokeWidth) {
+                fractionLabel.attr('x', fractionPosition(config.fraction) - length - config.strokeWidth - 1)
                     .attr('fill', config.fractionLabelColor);
             } else {
-                fractionLabel.attr('x', fillWidth() + config.strokeWidth + 1)
+                fractionLabel.attr('x', fractionPosition(config.fraction) + config.strokeWidth + 1)
                     .attr('fill', config.fractionColor);
             }
         }
@@ -68,6 +84,30 @@
 
         var middlePositionText = function() {
             return config.height - Math.max(2, config.strokeWidth / 2) - (config.height - config.textSize) / 2;
+        }
+
+        var drawTopMarker = function(marker) {
+
+            var color = marker.color ? marker.color : config.fractionColor;
+
+            svg.append('line')
+                .attr('x1', config.strokeWidth / 2 + fractionPosition(marker.fraction))
+                .attr('y1', -config.strokeWidth / 2)
+                .attr('x2', config.strokeWidth / 2 + fractionPosition(marker.fraction))
+                .attr('y2', -config.textSize)
+                .style('stroke-width', 1)
+                .style('stroke', color);
+
+            if (marker.label) {
+                svg.append('text')
+                    .text(marker.label)
+                    .attr('x', config.strokeWidth / 2 + fractionPosition(marker.fraction))
+                    .attr('y', -config.textSize - 2)
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', color)
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', config.textSize);
+            }
         }
 
         var svg = d3.select('#gauge').append("svg")
@@ -88,7 +128,7 @@
         var fill = svg.append('rect')
             .attr('x', config.strokeWidth / 2)
             .attr('y', config.strokeWidth / 2)
-            .attr('width', fillWidth())
+            .attr('width', fractionPosition(config.fraction))
             .attr('height', config.height - config.strokeWidth)
             .style('fill', config.fractionColor);
 
@@ -119,6 +159,10 @@
                 .attr('fill', config.labelColor)
                 .attr('font-family', 'sans-serif')
                 .attr('font-size', config.textSize);
+        }
+
+        for (marker of config.topMarker) {
+            drawTopMarker(marker);
         }
     </script>
 </body>
