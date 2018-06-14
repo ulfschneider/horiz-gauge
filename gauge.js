@@ -194,6 +194,7 @@ Gauge = (function() {
                 .append('g')
                 .attr('transform', 'translate(' + config.margin.left + "," + config.margin.top + ')');
 
+            //progress frame
             config.svg.append('rect')
                 .attr('x', 0)
                 .attr('y', 0)
@@ -203,6 +204,7 @@ Gauge = (function() {
                 .style('stroke', config.borderColor)
                 .style('fill', config.emptyColor);
 
+            //progress bar
             config.svg.append('rect')
                 .attr('x', config.strokeWidth / 2)
                 .attr('y', config.strokeWidth / 2)
@@ -210,10 +212,12 @@ Gauge = (function() {
                 .attr('height', config.height - config.strokeWidth)
                 .style('fill', config.fraction > 1.0 ? config.fractionExceedColor : config.fractionColor);
 
+            //progress bar dividers
             for (divider of config.divider) {
                 drawDivider(divider, config);
             }
 
+            //progress label
             var fractionLabel = config.svg.append('text')
                 .text(determineFractionLabelText(config))
                 .attr('y', calcVertTextPosition(config))
@@ -222,6 +226,7 @@ Gauge = (function() {
                 .attr('font-size', config.textSize);
             adjustFractionTextPosition(fractionLabel, config);
 
+            //left label
             if (config.label.left) {
                 config.svg.append('text')
                     .text(config.label.left)
@@ -233,6 +238,7 @@ Gauge = (function() {
                     .attr('font-size', config.textSize);
             }
 
+            //right label
             if (config.label.right) {
                 config.svg.append('text')
                     .text(config.label.right)
