@@ -61,7 +61,7 @@ Gauge = (function() {
     }
 
     var calcVertTextPosition = function(config) {
-        return config.height - Math.max(2, config.strokeWidth / 2) - (config.height - config.textSize) / 2;
+        return config.height + config.strokeWidth / 2 - Math.max(2, config.strokeWidth / 2) - (config.height - config.textSize) / 2;
     }
 
     var drawMarker = function(marker, config) {
@@ -72,7 +72,7 @@ Gauge = (function() {
             .attr('x1', config.strokeWidth / 2 + calcHorizFractionPosition(marker.fraction, config))
             .attr('y1', marker.position == 'BOTTOM' ? config.height + config.strokeWidth / 2 : -config.strokeWidth / 2)
             .attr('x2', config.strokeWidth / 2 + calcHorizFractionPosition(marker.fraction, config))
-            .attr('y2', marker.position == 'BOTTOM' ? config.height + config.textSize : -config.textSize)
+            .attr('y2', marker.position == 'BOTTOM' ? config.height + +config.strokeWidth / 2 + config.textSize : -config.textSize - config.strokeWidth / 2)
             .style('stroke-width', 1)
             .style('stroke', color);
 
@@ -80,7 +80,7 @@ Gauge = (function() {
             config.svg.append('text')
                 .text(marker.label)
                 .attr('x', config.strokeWidth / 2 + calcHorizFractionPosition(marker.fraction, config))
-                .attr('y', marker.position == 'BOTTOM' ? config.height + 2 * config.textSize : -config.textSize - 2)
+                .attr('y', marker.position == 'BOTTOM' ? config.height + config.strokeWidth / 2 + 2 * config.textSize : -config.textSize - config.strokeWidth / 2)
                 .attr('text-anchor', 'middle')
                 .attr('fill', color)
                 .attr('font-family', 'sans-serif')
@@ -194,7 +194,6 @@ Gauge = (function() {
                 .append('g')
                 .attr('transform', 'translate(' + config.margin.left + "," + config.margin.top + ')');
 
-
             config.svg.append('rect')
                 .attr('x', 0)
                 .attr('y', 0)
@@ -226,7 +225,7 @@ Gauge = (function() {
             if (config.label.left) {
                 config.svg.append('text')
                     .text(config.label.left)
-                    .attr('x', -config.textSize / 2)
+                    .attr('x', -config.textSize / 2 - config.strokeWidth / 2)
                     .attr('y', calcVertTextPosition(config))
                     .attr('text-anchor', 'end')
                     .attr('fill', config.labelColor)
@@ -237,7 +236,7 @@ Gauge = (function() {
             if (config.label.right) {
                 config.svg.append('text')
                     .text(config.label.right)
-                    .attr('x', config.width + config.strokeWidth + config.textSize / 2)
+                    .attr('x', config.width + config.strokeWidth / 2 + config.textSize / 2)
                     .attr('y', calcVertTextPosition(config))
                     .attr('fill', config.labelColor)
                     .attr('font-family', 'sans-serif')
