@@ -109,7 +109,7 @@ Gauge = (function() {
         var c = deepCopy(config);
 
         if (isUndefined(c.id) || isEmpty(c.id)) {
-            throw "id is undefined or empty";
+            throw 'id is undefined or empty';
         }
 
         c.fraction = c.fraction ? c.fraction : 0.0;
@@ -171,10 +171,19 @@ Gauge = (function() {
         return c;
     }
 
+    var hasGauge = function(config) {
+        return isTruthy(document.getElementById(config.id));
+    }
+
 
     return {
         draw: function(config) {
             config = prepareConfig(config);
+
+            if (!hasGauge(config)) {
+                throw 'DOM element with id [' + config.id + '] could not be found';
+            }
+
             clearGauge(config);
 
             config.svg = d3.select('#' + config.id)
