@@ -120,7 +120,7 @@ Gauge = (function() {
         c.fractionColor = c.fractionColor ? c.fractionColor : 'black';
         c.fractionExceedColor = c.fractionExceedColor ? c.fractionExceedColor : 'red';
         c.fractionLabelColor = c.fractionLabelColor ? c.fractionLabelColor : 'white';
-        c.labelColor = c.LabelColor ? c.labelColor : 'black';
+        c.labelColor = c.labelColor ? c.labelColor : 'black';
         c.strokeWidth = c.strokeWidth ? c.strokeWidth : 4;
         c.textSize = c.textSize ? c.textSize : 16;
         if (isUndefined(c.margin) || isEmpty(c.margin)) {
