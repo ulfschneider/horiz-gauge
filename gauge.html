@@ -27,6 +27,7 @@
 <body>
 
     <div id="gauge"></div>
+    <div id="gauge2"></div>
     <div>Please reload this page for a reset of all configurations.</div>
     <div id="error"></div>
     <textarea id="config" spellcheck="false" autocorrect="off" autocapitalize="off" rows="75"></textarea>
@@ -92,6 +93,12 @@
         }
 
         var gauge = Gauge(config);
+        console.log(gauge.toString());
+        var gauge2 = Gauge({
+            id: "gauge2",
+            fraction: .31
+        });
+        console.log(gauge2.toString());
 
         var error = document.getElementById('error');
         var textarea = document.getElementById('config');

@@ -43,23 +43,23 @@ function deepCopy(thing) {
 
 function Gauge(config) {
 
-    var calcHorizFractionPosition = function(fraction, config) {
+    var calcHorizFractionPosition = function(fraction) {
         return Math.max(0, Math.min((config.width - config.strokeWidth) * fraction, config.width - config.strokeWidth));
     }
 
-    var adjustFractionTextPosition = function(fractionLabel, config) {
+    var adjustFractionTextPosition = function(fractionLabel) {
         var length = fractionLabel.node()
             .getComputedTextLength();
-        if (calcHorizFractionPosition(config.fraction, config) + config.strokeWidth + length + 1 > config.width - config.strokeWidth) {
-            fractionLabel.attr('x', calcHorizFractionPosition(config.fraction, config) - length - config.strokeWidth - 1)
+        if (calcHorizFractionPosition(config.fraction) + config.strokeWidth + length + 1 > config.width - config.strokeWidth) {
+            fractionLabel.attr('x', calcHorizFractionPosition(config.fraction) - length - config.strokeWidth - 1)
                 .attr('fill', config.fractionLabelColor);
         } else {
-            fractionLabel.attr('x', calcHorizFractionPosition(config.fraction, config) + config.strokeWidth + 1)
+            fractionLabel.attr('x', calcHorizFractionPosition(config.fraction) + config.strokeWidth + 1)
                 .attr('fill', config.fractionColor);
         }
     }
 
-    var determineFractionLabelText = function(config) {
+    var determineFractionLabelText = function() {
         if (config.label.fraction) {
             return config.label.fraction;
         } else {
@@ -67,11 +67,11 @@ function Gauge(config) {
         }
     }
 
-    var calcVertTextPosition = function(config) {
-        return config.height + config.strokeWidth / 2 - Math.max(2, config.strokeWidth / 2) - (config.height - config.textSize) / 2;
+    var calcVertTextPosition = function() {
+        return config.height - (config.height - config.textSize) / 2 - 2;
     }
 
-    var drawMarker = function(marker, config) {
+    var drawMarker = function(marker) {
 
         var color = marker.color ? marker.color : config.fractionColor;
 
@@ -95,7 +95,7 @@ function Gauge(config) {
         }
     }
 
-    var drawDivider = function(divider, config) {
+    var drawDivider = function(divider) {
         var color = divider.color ? divider.color : 'white';
 
         config.svg.append('line')
@@ -107,7 +107,7 @@ function Gauge(config) {
             .style('stroke', color);
     }
 
-    var clearGauge = function(config) {
+    var clearGauge = function() {
         d3.select('#' + config.id + 'svg')
             .remove();
     }
@@ -128,7 +128,7 @@ function Gauge(config) {
         c.fractionExceedColor = c.fractionExceedColor ? c.fractionExceedColor : 'red';
         c.fractionLabelColor = c.fractionLabelColor ? c.fractionLabelColor : 'white';
         c.labelColor = c.labelColor ? c.labelColor : 'black';
-        c.strokeWidth = isNumber(c.strokeWidth) ? c.strokeWidth : 4;
+        c.strokeWidth = isNumber(c.strokeWidth) ? c.strokeWidth : 0;
         c.textSize = c.textSize ? c.textSize : 16;
         if (isUndefined(c.margin) || isEmpty(c.margin)) {
             c.margin = {
@@ -178,18 +178,18 @@ function Gauge(config) {
         return c;
     }
 
-    var hasGauge = function(config) {
+    var hasGauge = function() {
         return isTruthy(document.getElementById(config.id));
     }
 
-    var drawGauge = function(config) {
+    var drawGauge = function() {
         config.svg = d3.select('#' + config.id)
             .append('svg')
             .attr('id', config.id + 'svg')
             .attr('width', config.width + config.margin.left + config.margin.right + config.strokeWidth)
             .attr('height', config.height + config.margin.top + config.margin.bottom + config.strokeWidth)
             .append('g')
-            .attr('transform', 'translate(' + config.margin.left + "," + config.margin.top + ')');
+            .attr('transform', 'translate(' + (config.margin.left + config.strokeWidth / 2) + "," + (config.margin.top + config.strokeWidth / 2) + ')');
 
         //progress frame
         config.svg.append('rect')
@@ -255,27 +255,29 @@ function Gauge(config) {
 
     this.draw = function() {
 
-        if (!hasGauge(_this.config)) {
+        if (!hasGauge()) {
             throw 'DOM element with id [' + config.id + '] could not be found';
         }
 
-        clearGauge(_this.config);
-        drawGauge(_this.config);
+        clearGauge();
+        drawGauge();
     }
 
     this.clear = function() {
-        clearGauge(_this.config);
+        clearGauge();
     }
 
-    this.configure = function(config) {
-        _this.config = prepareConfig(config);
-        this.draw();
+    this.configure = function(c) {
+        config = prepareConfig(c);
+        _this.draw();
+    }
+
+    this.toString = function() {
+        return JSON.stringify(config, null, '  ');
     }
 
     //constructor
     var _this = this;
-    _this.config = prepareConfig(config);
-    _this.draw();
-
-    return _this;
+    this.configure(config);
+    return this;
 }
