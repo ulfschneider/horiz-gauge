@@ -29,7 +29,11 @@ function isFalsy(thing) {
 }
 
 function isNumber(thing) {
-    return !isNaN(thing) && isFinite(thing);
+    return !isString(thing) && !isNaN(thing) && isFinite(thing);
+}
+
+function isString(thing) {
+    return (typeof thing == 'string' || thing instanceof String)
 }
 
 function deepCopy(thing) {
