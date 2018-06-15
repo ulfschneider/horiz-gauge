@@ -256,7 +256,7 @@ function Gauge(config) {
     this.draw = function() {
 
         if (!hasGauge()) {
-            throw 'DOM element with id [' + config.id + '] could not be found';
+            throw 'DOM element with id "' + config.id + '" could not be found';
         }
 
         clearGauge();
