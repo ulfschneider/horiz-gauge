@@ -75,7 +75,7 @@ function Gauge(config) {
 
         var color = marker.color ? marker.color : config.fractionColor;
 
-        config.svg.append('line')
+        svg.append('line')
             .attr('x1', config.strokeWidth / 2 + calcHorizFractionPosition(marker.fraction, config))
             .attr('y1', marker.position == 'BOTTOM' ? config.height + config.strokeWidth / 2 : -config.strokeWidth / 2)
             .attr('x2', config.strokeWidth / 2 + calcHorizFractionPosition(marker.fraction, config))
@@ -84,7 +84,7 @@ function Gauge(config) {
             .style('stroke', color);
 
         if (marker.label) {
-            config.svg.append('text')
+            svg.append('text')
                 .text(marker.label)
                 .attr('x', config.strokeWidth / 2 + calcHorizFractionPosition(marker.fraction, config))
                 .attr('y', marker.position == 'BOTTOM' ? config.height + config.strokeWidth / 2 + 2 * config.textSize : -config.textSize - config.strokeWidth / 2)
@@ -98,7 +98,7 @@ function Gauge(config) {
     var drawDivider = function(divider) {
         var color = divider.color ? divider.color : 'white';
 
-        config.svg.append('line')
+        svg.append('line')
             .attr('x1', config.strokeWidth / 2 + calcHorizFractionPosition(divider.fraction, config))
             .attr('y1', config.strokeWidth / 2)
             .attr('x2', config.strokeWidth / 2 + calcHorizFractionPosition(divider.fraction, config))
@@ -183,7 +183,7 @@ function Gauge(config) {
     }
 
     var drawGauge = function() {
-        config.svg = d3.select('#' + config.id)
+        svg = d3.select('#' + config.id)
             .append('svg')
             .attr('id', config.id + 'svg')
             .attr('width', config.width + config.margin.left + config.margin.right + config.strokeWidth)
@@ -192,7 +192,7 @@ function Gauge(config) {
             .attr('transform', 'translate(' + (config.margin.left + config.strokeWidth / 2) + "," + (config.margin.top + config.strokeWidth / 2) + ')');
 
         //progress frame
-        config.svg.append('rect')
+        svg.append('rect')
             .attr('x', 0)
             .attr('y', 0)
             .attr('width', config.width)
@@ -202,7 +202,7 @@ function Gauge(config) {
             .style('fill', config.emptyColor);
 
         //progress bar
-        var progressBar = config.svg.append('rect')
+        var progressBar = svg.append('rect')
             .attr('x', config.strokeWidth / 2)
             .attr('y', config.strokeWidth / 2)
             .attr('width', calcHorizFractionPosition(config.fraction, config))
@@ -215,7 +215,7 @@ function Gauge(config) {
         }
 
         //progress label
-        var fractionLabel = config.svg.append('text')
+        var fractionLabel = svg.append('text')
             .text(determineFractionLabelText(config))
             .attr('y', calcVertTextPosition(config))
             .attr('fill', 'none')
@@ -225,7 +225,7 @@ function Gauge(config) {
 
         //left label
         if (config.label.left) {
-            config.svg.append('text')
+            svg.append('text')
                 .text(config.label.left)
                 .attr('x', -config.textSize / 2 - config.strokeWidth / 2)
                 .attr('y', calcVertTextPosition(config))
@@ -237,7 +237,7 @@ function Gauge(config) {
 
         //right label
         if (config.label.right) {
-            config.svg.append('text')
+            svg.append('text')
                 .text(config.label.right)
                 .attr('x', config.width + config.strokeWidth / 2 + config.textSize / 2)
                 .attr('y', calcVertTextPosition(config))
@@ -278,6 +278,7 @@ function Gauge(config) {
 
     //constructor
     var _this = this;
+    var svg;
     this.configure(config);
     return this;
 }
