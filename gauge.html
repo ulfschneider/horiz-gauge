@@ -91,7 +91,7 @@
 
         }
 
-        Gauge.draw(config);
+        var gauge = Gauge(config);
 
         var error = document.getElementById('error');
         var textarea = document.getElementById('config');
@@ -100,7 +100,7 @@
             try {
                 editConfig = JSON.parse(textarea.value);
                 error.innerHTML = '';
-                Gauge.draw(editConfig)
+                gauge.configure(editConfig);
             } catch (e) {
                 console.log(e);
                 error.innerHTML = e;

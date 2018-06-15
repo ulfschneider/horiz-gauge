@@ -41,8 +41,7 @@ function deepCopy(thing) {
 }
 
 
-Gauge = (function() {
-    var _this = this;
+function Gauge(config) {
 
     var calcHorizFractionPosition = function(fraction, config) {
         return Math.max(0, Math.min((config.width - config.strokeWidth) * fraction, config.width - config.strokeWidth));
@@ -183,84 +182,100 @@ Gauge = (function() {
         return isTruthy(document.getElementById(config.id));
     }
 
+    var drawGauge = function(config) {
+        config.svg = d3.select('#' + config.id)
+            .append('svg')
+            .attr('id', config.id + 'svg')
+            .attr('width', config.width + config.margin.left + config.margin.right + config.strokeWidth)
+            .attr('height', config.height + config.margin.top + config.margin.bottom + config.strokeWidth)
+            .append('g')
+            .attr('transform', 'translate(' + config.margin.left + "," + config.margin.top + ')');
 
-    return {
-        draw: function(config) {
-            config = prepareConfig(config);
+        //progress frame
+        config.svg.append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', config.width)
+            .attr('height', config.height)
+            .style('stroke-width', config.strokeWidth)
+            .style('stroke', config.borderColor)
+            .style('fill', config.emptyColor);
 
-            if (!hasGauge(config)) {
-                throw 'DOM element with id [' + config.id + '] could not be found';
-            }
+        //progress bar
+        var progressBar = config.svg.append('rect')
+            .attr('x', config.strokeWidth / 2)
+            .attr('y', config.strokeWidth / 2)
+            .attr('width', calcHorizFractionPosition(config.fraction, config))
+            .attr('height', config.height - config.strokeWidth)
+            .style('fill', config.fraction > 1.0 ? config.fractionExceedColor : config.fractionColor);
 
-            clearGauge(config);
+        //progress bar dividers
+        for (divider of config.divider) {
+            drawDivider(divider, config);
+        }
 
-            config.svg = d3.select('#' + config.id)
-                .append('svg')
-                .attr('id', config.id + 'svg')
-                .attr('width', config.width + config.margin.left + config.margin.right + config.strokeWidth)
-                .attr('height', config.height + config.margin.top + config.margin.bottom + config.strokeWidth)
-                .append('g')
-                .attr('transform', 'translate(' + config.margin.left + "," + config.margin.top + ')');
+        //progress label
+        var fractionLabel = config.svg.append('text')
+            .text(determineFractionLabelText(config))
+            .attr('y', calcVertTextPosition(config))
+            .attr('fill', 'none')
+            .attr('font-family', 'sans-serif')
+            .attr('font-size', config.textSize);
+        adjustFractionTextPosition(fractionLabel, config);
 
-            //progress frame
-            config.svg.append('rect')
-                .attr('x', 0)
-                .attr('y', 0)
-                .attr('width', config.width)
-                .attr('height', config.height)
-                .style('stroke-width', config.strokeWidth)
-                .style('stroke', config.borderColor)
-                .style('fill', config.emptyColor);
-
-            //progress bar
-            config.svg.append('rect')
-                .attr('x', config.strokeWidth / 2)
-                .attr('y', config.strokeWidth / 2)
-                .attr('width', calcHorizFractionPosition(config.fraction, config))
-                .attr('height', config.height - config.strokeWidth)
-                .style('fill', config.fraction > 1.0 ? config.fractionExceedColor : config.fractionColor);
-
-            //progress bar dividers
-            for (divider of config.divider) {
-                drawDivider(divider, config);
-            }
-
-            //progress label
-            var fractionLabel = config.svg.append('text')
-                .text(determineFractionLabelText(config))
+        //left label
+        if (config.label.left) {
+            config.svg.append('text')
+                .text(config.label.left)
+                .attr('x', -config.textSize / 2 - config.strokeWidth / 2)
                 .attr('y', calcVertTextPosition(config))
-                .attr('fill', 'none')
+                .attr('text-anchor', 'end')
+                .attr('fill', config.labelColor)
                 .attr('font-family', 'sans-serif')
                 .attr('font-size', config.textSize);
-            adjustFractionTextPosition(fractionLabel, config);
+        }
 
-            //left label
-            if (config.label.left) {
-                config.svg.append('text')
-                    .text(config.label.left)
-                    .attr('x', -config.textSize / 2 - config.strokeWidth / 2)
-                    .attr('y', calcVertTextPosition(config))
-                    .attr('text-anchor', 'end')
-                    .attr('fill', config.labelColor)
-                    .attr('font-family', 'sans-serif')
-                    .attr('font-size', config.textSize);
-            }
+        //right label
+        if (config.label.right) {
+            config.svg.append('text')
+                .text(config.label.right)
+                .attr('x', config.width + config.strokeWidth / 2 + config.textSize / 2)
+                .attr('y', calcVertTextPosition(config))
+                .attr('fill', config.labelColor)
+                .attr('font-family', 'sans-serif')
+                .attr('font-size', config.textSize);
+        }
 
-            //right label
-            if (config.label.right) {
-                config.svg.append('text')
-                    .text(config.label.right)
-                    .attr('x', config.width + config.strokeWidth / 2 + config.textSize / 2)
-                    .attr('y', calcVertTextPosition(config))
-                    .attr('fill', config.labelColor)
-                    .attr('font-family', 'sans-serif')
-                    .attr('font-size', config.textSize);
-            }
-
-            for (marker of config.marker) {
-                drawMarker(marker, config);
-            }
+        for (marker of config.marker) {
+            drawMarker(marker, config);
         }
     }
 
-}());
+    //public interface
+
+    this.draw = function() {
+
+        if (!hasGauge(_this.config)) {
+            throw 'DOM element with id [' + config.id + '] could not be found';
+        }
+
+        clearGauge(_this.config);
+        drawGauge(_this.config);
+    }
+
+    this.clear = function() {
+        clearGauge(_this.config);
+    }
+
+    this.configure = function(config) {
+        _this.config = prepareConfig(config);
+        this.draw();
+    }
+
+    //constructor
+    var _this = this;
+    _this.config = prepareConfig(config);
+    _this.draw();
+
+    return _this;
+}
