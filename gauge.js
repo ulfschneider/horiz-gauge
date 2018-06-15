@@ -28,6 +28,10 @@ function isFalsy(thing) {
     }
 }
 
+function isNumber(thing) {
+    return !isNaN(thing) && isFinite(thing);
+}
+
 function deepCopy(thing) {
     return JSON.parse(JSON.stringify(thing));
 }
@@ -121,7 +125,7 @@ Gauge = (function() {
         c.fractionExceedColor = c.fractionExceedColor ? c.fractionExceedColor : 'red';
         c.fractionLabelColor = c.fractionLabelColor ? c.fractionLabelColor : 'white';
         c.labelColor = c.labelColor ? c.labelColor : 'black';
-        c.strokeWidth = c.strokeWidth ? c.strokeWidth : 4;
+        c.strokeWidth = isNumber(c.strokeWidth) ? c.strokeWidth : 4;
         c.textSize = c.textSize ? c.textSize : 16;
         if (isUndefined(c.margin) || isEmpty(c.margin)) {
             c.margin = {
