@@ -1,3 +1,7 @@
+'use babel';
+
+const d3 = require('d3');
+
 function HorizGauge(config) {
 
     var isUndefined = function (thing) {

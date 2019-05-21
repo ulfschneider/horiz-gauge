@@ -1,6 +1,6 @@
 {
   "name": "horiz-gauge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Draw a svg horizontal progress gauge",
   "main": "horiz-gauge.js",
   "scripts": {
@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/ulfschneider/horiz-gauge/issues"
   },
-  "homepage": "https://github.com/ulfschneider/horiz-gauge#readme"
+  "homepage": "https://github.com/ulfschneider/horiz-gauge#readme",
+  "dependencies": {
+    "d3": "^5.9.2"
+  }
 }
