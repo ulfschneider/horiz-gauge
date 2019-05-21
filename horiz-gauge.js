@@ -234,7 +234,7 @@ HorizGauge[Symbol.species] = HorizGauge;
 HorizGauge.prototype.draw = function () {
     validateSettings(this.settings);
     this.remove();
-    drawGauge();
+    drawGauge(this.settings);
 }
 
 /**
