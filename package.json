@@ -1,0 +1,24 @@
+{
+  "name": "horiz-gauge",
+  "version": "0.1.0",
+  "description": "Draw a svg horizontal progress gauge",
+  "main": "horiz-gauge.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ulfschneider/horiz-gauge.git"
+  },
+  "keywords": [
+    "SVG",
+    "D3",
+    "Gauge"
+  ],
+  "author": "Ulf Schneider",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ulfschneider/horiz-gauge/issues"
+  },
+  "homepage": "https://github.com/ulfschneider/horiz-gauge#readme"
+}
