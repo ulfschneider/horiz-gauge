@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Gauge</title>
+    <title>HorizGauge</title>
 
     <style type="text/css">
         body {
@@ -25,30 +25,30 @@
 </head>
 
 <body>
-    <h1>The Gauge Playground</h1>
+    <h1>The HorizGauge Playground</h1>
     <p>A d3.js progress bar with some options</p>
     
     <div id="gauge"></div>    
 
-    <div>Change the Gauge settings below and see the effect above <strong>on the fly</strong>. Please reload this page for a reset of all settings.</div>
+    <div>Change the HorizGauge settings below and see the effect above <strong>on the fly</strong>. Please reload this page for a reset of all settings.</div>
     <div id="error"></div>
     <textarea id="config" spellcheck="false" autocorrect="off" autocapitalize="off" rows="75"></textarea>
 
     <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="./gauge.js"></script>
-    <script>
+    <script src="./horiz-gauge.js"></script>
+    <script>    
         var config = {
             id: 'gauge',
             fraction: .58,
-            width: 300,
-            height: 26,
+            progressWidth: 300,
+            progressHeight: 26,
             borderColor: 'lightgray',
+            borderWidth: 4,            
             emptyColor: 'lightgray',
             fractionColor: 'black',
             fractionExceedColor: 'red',
             fractionLabelColor: 'white',
             labelColor: 'black',
-            strokeWidth: 4,
             textSize: 16,
             margin: {
                 left: 230,
@@ -94,7 +94,7 @@
 
         }
 
-        var gauge = Gauge(config);
+        var gauge = new HorizGauge(config);
 
         var error = document.getElementById('error');
         var textarea = document.getElementById('config');

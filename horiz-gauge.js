@@ -1,65 +1,65 @@
-function isUndefined(thing) {
-    return typeof thing == 'undefined';
-}
+function HorizGauge(config) {
 
-function isNull(thing) {
-    return thing == null;
-}
-
-function isTruthy(thing) {
-    return !isFalsy(thing);
-}
-
-function isEmpty(thing) {
-    for (var key in thing) {
-        if (thing.hasOwnProperty(key))
-            return false;
+    var isUndefined = function (thing) {
+        return typeof thing == 'undefined';
     }
-    return true;
-}
 
-function isFalsy(thing) {
-    if (isUndefined(thing)) {
+    var isNull = function (thing) {
+        return thing == null;
+    }
+
+    var isTruthy = function (thing) {
+        return !isFalsy(thing);
+    }
+
+    var isEmpty = function (thing) {
+        for (var key in thing) {
+            if (thing.hasOwnProperty(key))
+                return false;
+        }
         return true;
-    } else if (isNull(thing)) {
-        return true;
-    } else {
-        return !thing;
-    }
-}
-
-function isNumber(thing) {
-    return !isString(thing) && !isNaN(thing) && isFinite(thing);
-}
-
-function isString(thing) {
-    return (typeof thing == 'string' || thing instanceof String)
-}
-
-function deepCopy(thing) {
-    return JSON.parse(JSON.stringify(thing));
-}
-
-
-function Gauge(config) {
-
-    var calcHorizFractionPosition = function(fraction) {
-        return Math.max(0, Math.min((config.width - config.strokeWidth) * fraction, config.width - config.strokeWidth));
     }
 
-    var adjustFractionTextPosition = function(fractionLabel) {
+    var isFalsy = function (thing) {
+        if (isUndefined(thing)) {
+            return true;
+        } else if (isNull(thing)) {
+            return true;
+        } else {
+            return !thing;
+        }
+    }
+
+    var isNumber = function (thing) {
+        return !isString(thing) && !isNaN(thing) && isFinite(thing);
+    }
+
+    var isString = function (thing) {
+        return (typeof thing == 'string' || thing instanceof String)
+    }
+
+    var deepCopy = function (thing) {
+        return JSON.parse(JSON.stringify(thing));
+    }
+
+    var calcHorizFractionPosition = function (fraction) {
+        return Math.max(0, Math.min(config.progressWidth * fraction, config.progressWidth));
+    }
+
+    var adjustFractionTextPosition = function (fractionLabel) {
         var length = fractionLabel.node()
             .getComputedTextLength();
-        if (calcHorizFractionPosition(config.fraction) + config.strokeWidth + length + 1 > config.width - config.strokeWidth) {
-            fractionLabel.attr('x', calcHorizFractionPosition(config.fraction) - length - config.strokeWidth - 1)
+        var fractionPos = calcHorizFractionPosition(config.fraction);
+        if (fractionPos + config.textSize / 4 + length > config.progressWidth) {
+            fractionLabel.attr('x', config.borderWidth + fractionPos - length - config.textSize / 4)
                 .attr('fill', config.fractionLabelColor);
         } else {
-            fractionLabel.attr('x', calcHorizFractionPosition(config.fraction) + config.strokeWidth + 1)
+            fractionLabel.attr('x', fractionPos + config.borderWidth + config.textSize / 4)
                 .attr('fill', config.fractionColor);
         }
     }
 
-    var determineFractionLabelText = function() {
+    var determineFractionLabelText = function () {
         if (config.label.fraction) {
             return config.label.fraction;
         } else {
@@ -67,27 +67,27 @@ function Gauge(config) {
         }
     }
 
-    var calcVertTextPosition = function() {
-        return config.height - (config.height - config.textSize) / 2 - 2;
+    var calcVertTextPosition = function () {
+        return config.borderWidth + config.progressHeight / 2 + config.textSize / 3;
     }
 
-    var drawMarker = function(marker) {
+    var drawMarker = function (marker) {
 
         var color = marker.color ? marker.color : config.fractionColor;
 
         svg.append('line')
-            .attr('x1', config.strokeWidth / 2 + calcHorizFractionPosition(marker.fraction, config))
-            .attr('y1', marker.position == 'BOTTOM' ? config.height + config.strokeWidth / 2 : -config.strokeWidth / 2)
-            .attr('x2', config.strokeWidth / 2 + calcHorizFractionPosition(marker.fraction, config))
-            .attr('y2', marker.position == 'BOTTOM' ? config.height + +config.strokeWidth / 2 + config.textSize : -config.textSize - config.strokeWidth / 2)
+            .attr('x1', config.borderWidth + calcHorizFractionPosition(marker.fraction, config))
+            .attr('y1', marker.position == 'BOTTOM' ? config.progressHeight + config.borderWidth * 2 : 0)
+            .attr('x2', config.borderWidth + calcHorizFractionPosition(marker.fraction, config))
+            .attr('y2', marker.position == 'BOTTOM' ? config.progressHeight + config.borderWidth * 2 + config.textSize : -config.textSize)
             .style('stroke-width', 1)
             .style('stroke', color);
 
         if (marker.label) {
             svg.append('text')
                 .text(marker.label)
-                .attr('x', config.strokeWidth / 2 + calcHorizFractionPosition(marker.fraction, config))
-                .attr('y', marker.position == 'BOTTOM' ? config.height + config.strokeWidth / 2 + 2 * config.textSize : -config.textSize - config.strokeWidth / 2)
+                .attr('x', config.borderWidth + calcHorizFractionPosition(marker.fraction, config))
+                .attr('y', marker.position == 'BOTTOM' ? config.progressHeight + config.borderWidth * 2 + config.textSize * 2 : -(config.textSize + config.textSize / 3))
                 .attr('text-anchor', 'middle')
                 .attr('fill', color)
                 .attr('font-family', 'sans-serif')
@@ -95,24 +95,28 @@ function Gauge(config) {
         }
     }
 
-    var drawDivider = function(divider) {
+    var drawDivider = function (divider) {
         var color = divider.color ? divider.color : 'white';
 
         svg.append('line')
-            .attr('x1', config.strokeWidth / 2 + calcHorizFractionPosition(divider.fraction, config))
-            .attr('y1', config.strokeWidth / 2)
-            .attr('x2', config.strokeWidth / 2 + calcHorizFractionPosition(divider.fraction, config))
-            .attr('y2', config.height - config.strokeWidth / 2)
+            .attr('x1', config.borderWidth + calcHorizFractionPosition(divider.fraction, config))
+            .attr('y1', config.borderWidth)
+            .attr('x2', config.borderWidth + calcHorizFractionPosition(divider.fraction, config))
+            .attr('y2', config.progressHeight + config.borderWidth)
             .style('stroke-width', 1)
             .style('stroke', color);
     }
 
-    var clearGauge = function() {
-        d3.select('#' + config.id + 'svg')
-            .remove();
+    var removeGauge = function () {
+        var svg = d3.select('#' + config.id);
+        if (svg) {
+            while (svg.firstChild) {
+                svg.removeChild(svg.firstChild);
+            }
+        }
     }
 
-    var prepareConfig = function(config) {
+    var prepareConfig = function (config) {
         var c = deepCopy(config);
 
         if (isUndefined(c.id) || isEmpty(c.id)) {
@@ -120,15 +124,15 @@ function Gauge(config) {
         }
 
         c.fraction = c.fraction ? c.fraction : 0.0;
-        c.width = c.width ? c.width : 300;
-        c.height = c.height ? c.height : 26;
+        c.progressWidth = c.progressWidth ? c.progressWidth : 300;
+        c.progressHeight = c.progressHeight ? c.progressHeight : 26;
         c.borderColor = c.borderColor ? c.borderColor : 'lightgray';
         c.emptyColor = c.emptyColor ? c.emptyColor : 'lightgray';
         c.fractionColor = c.fractionColor ? c.fractionColor : 'black';
         c.fractionExceedColor = c.fractionExceedColor ? c.fractionExceedColor : 'red';
         c.fractionLabelColor = c.fractionLabelColor ? c.fractionLabelColor : 'white';
         c.labelColor = c.labelColor ? c.labelColor : 'black';
-        c.strokeWidth = isNumber(c.strokeWidth) ? c.strokeWidth : 0;
+        c.borderWidth = isNumber(c.borderWidth) ? c.borderWidth : 0;
         c.textSize = c.textSize ? c.textSize : 16;
         if (isUndefined(c.margin) || isEmpty(c.margin)) {
             c.margin = {
@@ -178,35 +182,40 @@ function Gauge(config) {
         return c;
     }
 
-    var hasGauge = function() {
+    var hasGauge = function () {
         return isTruthy(document.getElementById(config.id));
     }
 
-    var drawGauge = function() {
+    var drawGauge = function () {
         svg = d3.select('#' + config.id)
             .append('svg')
             .attr('id', config.id + 'svg')
-            .attr('width', config.width + config.margin.left + config.margin.right + config.strokeWidth)
-            .attr('height', config.height + config.margin.top + config.margin.bottom + config.strokeWidth)
+            .attr('width', config.progressWidth + config.margin.left + config.margin.right + config.borderWidth * 2)
+            .attr('height', config.progressHeight + config.margin.top + config.margin.bottom + config.borderWidth * 2)
             .append('g')
-            .attr('transform', 'translate(' + (config.margin.left + config.strokeWidth / 2) + "," + (config.margin.top + config.strokeWidth / 2) + ')');
+            .attr('transform', 'translate(' + (config.margin.left) + "," + (config.margin.top) + ')');
 
         //progress frame
         svg.append('rect')
             .attr('x', 0)
             .attr('y', 0)
-            .attr('width', config.width)
-            .attr('height', config.height)
-            .style('stroke-width', config.strokeWidth)
-            .style('stroke', config.borderColor)
+            .attr('width', config.progressWidth + config.borderWidth * 2)
+            .attr('height', config.progressHeight + config.borderWidth * 2)
+            .style('fill', config.borderColor);
+
+        svg.append('rect')
+            .attr('x', config.borderWidth)
+            .attr('y', config.borderWidth)
+            .attr('width', config.progressWidth)
+            .attr('height', config.progressHeight)
             .style('fill', config.emptyColor);
 
         //progress bar
         var progressBar = svg.append('rect')
-            .attr('x', config.strokeWidth / 2)
-            .attr('y', config.strokeWidth / 2)
+            .attr('x', config.borderWidth)
+            .attr('y', config.borderWidth)
             .attr('width', calcHorizFractionPosition(config.fraction, config))
-            .attr('height', config.height - config.strokeWidth)
+            .attr('height', config.progressHeight)
             .style('fill', config.fraction > 1.0 ? config.fractionExceedColor : config.fractionColor);
 
         //progress bar dividers
@@ -227,7 +236,7 @@ function Gauge(config) {
         if (config.label.left) {
             svg.append('text')
                 .text(config.label.left)
-                .attr('x', -config.textSize / 2 - config.strokeWidth / 2)
+                .attr('x', -config.textSize / 2)
                 .attr('y', calcVertTextPosition(config))
                 .attr('text-anchor', 'end')
                 .attr('fill', config.labelColor)
@@ -239,7 +248,7 @@ function Gauge(config) {
         if (config.label.right) {
             svg.append('text')
                 .text(config.label.right)
-                .attr('x', config.width + config.strokeWidth / 2 + config.textSize / 2)
+                .attr('x', config.progressWidth + config.borderWidth * 2 + config.textSize / 2)
                 .attr('y', calcVertTextPosition(config))
                 .attr('fill', config.labelColor)
                 .attr('font-family', 'sans-serif')
@@ -253,26 +262,26 @@ function Gauge(config) {
 
     //public interface
 
-    this.draw = function() {
+    this.draw = function () {
 
         if (!hasGauge()) {
             throw 'DOM element with id "' + config.id + '" could not be found';
         }
 
-        clearGauge();
+        removeGauge();
         drawGauge();
     }
 
-    this.clear = function() {
-        clearGauge();
+    this.remove = function () {
+        removeGauge();
     }
 
-    this.configure = function(c) {
+    this.configure = function (c) {
         config = prepareConfig(c);
         _this.draw();
     }
 
-    this.toString = function() {
+    this.toString = function () {
         return JSON.stringify(config, null, '  ');
     }
 
@@ -281,4 +290,28 @@ function Gauge(config) {
     var svg;
     this.configure(config);
     return this;
+}
+
+//////// Node Module Interface
+
+try {
+    if (module) {
+        module.exports = {
+            gauge: function (config) {
+                this.gauge = new HorizGauge(config);
+            },
+            configure: function (config) {
+                this.gauge.configure(config);
+            },
+            draw: function () {
+                this.gauge.draw();
+            },
+            remove: function () {
+                this.gauge.remove();
+            }
+        }
+    }
+} catch (e) {
+    //in non-node environment module is not defined and therefore
+    //we will not export anything
 }
