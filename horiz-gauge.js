@@ -224,8 +224,6 @@ function drawGauge(settings) {
 
 function HorizGauge(settings) {
     this.settings = settings;
-    this.defaultWidth = DEFAULT_WIDTH;
-    this.defaultHeight = DEFAULT_HEIGHT;
 }
 
 HorizGauge[Symbol.species] = HorizGauge;
