@@ -1,9 +1,10 @@
 {
   "name": "horiz-gauge",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Draw a svg horizontal progress gauge",
   "main": "horiz-gauge.js",
   "scripts": {
+    "build": "browserify -r ./horiz-gauge.js:horiz-gauge -o ./bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,5 +26,13 @@
     "d3": "^5.7.0",
     "js-base64": "^2.5.1",
     "underscore": "^1.9.1"
+  },
+  "devDependencies": {
+    "acorn": "^6.0.4",
+    "browserify": "^16.2.3",
+    "coveralls": "^3.0.2",
+    "documentation": "^9.1.1",
+    "fs": "0.0.1-security",
+    "jest": "^23.5.0"
   }
 }

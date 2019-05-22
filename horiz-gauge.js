@@ -7,9 +7,12 @@ const _ = require('underscore');
 
 function validateSettings(settings) {
 
-
     if (!settings) {
         throw "No settings";
+    }
+
+    if (settings.id) {
+        settings.svg = document.getElementById(settings.id);
     }
 
     if (!settings.svg || settings.svg.tagName.toLowerCase() !== 'svg') {
@@ -18,17 +21,19 @@ function validateSettings(settings) {
 
     settings.d3svg = d3.select(settings.svg);
 
+    settings.fontSize = settings.fontSize ? settings.fontSize : 16;
+    settings.fontFamily = settings.fontFamily ? settings.fontFamily : 'sans-serif';
     settings.fraction = settings.fraction ? settings.fraction : 0.0;
-    settings.progressWidth = settings.progressWidth ? settings.progressWidth : 300;
-    settings.progressHeight = settings.progressHeight ? settings.progressHeight : 26;
-    settings.borderColor = settings.borderColor ? settings.borderColor : 'lightgray';
-    settings.emptyColor = settings.emptyColor ? settings.emptyColor : 'lightgray';
-    settings.fractionColor = settings.fractionColor ? settings.fractionColor : 'black';
+    settings.progressWidth = settings.progressWidth ? settings.progressWidth : 200;
+    settings.progressHeight = settings.progressHeight ? settings.progressHeight : settings.fontSize + 2;
+    settings.borderColor = settings.borderColor ? settings.borderColor : '#ccc';
+    settings.emptyColor = settings.emptyColor ? settings.emptyColor : settings.borderColor;
+    settings.fractionColor = settings.fractionColor ? settings.fractionColor : '#222';
     settings.fractionExceedColor = settings.fractionExceedColor ? settings.fractionExceedColor : 'red';
     settings.fractionLabelColor = settings.fractionLabelColor ? settings.fractionLabelColor : 'white';
-    settings.labelColor = settings.labelColor ? settings.labelColor : 'black';
+    settings.labelColor = settings.labelColor ? settings.labelColor : settings.fractionColor;
     settings.borderWidth = _.isNumber(settings.borderWidth) ? settings.borderWidth : 0;
-    settings.textSize = settings.textSize ? settings.textSize : 16;
+
     if (_.isUndefined(settings.margin) || _.isEmpty(settings.margin)) {
         settings.margin = {
             left: 0,
@@ -91,14 +96,14 @@ function determineFractionLabelText(settings) {
 }
 
 function calcVertTextPosition(settings) {
-    return settings.borderWidth + settings.progressHeight / 2 + settings.textSize / 3;
+    return settings.borderWidth + settings.progressHeight / 2 + settings.fontSize / 3;
 }
 
 function drawDividers(settings) {
 
     for (divider of settings.divider) {
-        let color = divider.color ? divider.color : 'white';
-        settings.d3svg.append('line')
+        let color = divider.color ? divider.color : settings.emptyColor;
+        settings.g.append('line')
             .attr('x1', settings.borderWidth + calcHorizFractionPosition(settings, divider.fraction))
             .attr('y1', settings.borderWidth)
             .attr('x2', settings.borderWidth + calcHorizFractionPosition(settings, divider.fraction))
@@ -110,21 +115,21 @@ function drawDividers(settings) {
 }
 
 function drawProgressLabel(settings) {
-    let fractionLabel = settings.d3svg.append('text')
+    let fractionLabel = settings.g.append('text')
         .text(determineFractionLabelText(settings))
         .attr('y', calcVertTextPosition(settings))
         .attr('fill', 'none')
-        .attr('font-family', 'sans-serif')
-        .attr('font-size', settings.textSize);
+        .attr('font-family', settings.fontFamily)
+        .attr('font-size', settings.fontSize);
 
     let length = fractionLabel.node()
         .getComputedTextLength();
     let fractionPos = calcHorizFractionPosition(settings);
-    if (fractionPos + settings.textSize / 4 + length > settings.progressWidth) {
-        fractionLabel.attr('x', settings.borderWidth + fractionPos - length - settings.textSize / 4)
+    if (fractionPos + settings.fontSize / 4 + length > settings.progressWidth) {
+        fractionLabel.attr('x', settings.borderWidth + fractionPos - length - settings.fontSize / 4)
             .attr('fill', settings.fractionLabelColor);
     } else {
-        fractionLabel.attr('x', fractionPos + settings.borderWidth + settings.textSize / 4)
+        fractionLabel.attr('x', fractionPos + settings.borderWidth + settings.fontSize / 4)
             .attr('fill', settings.fractionColor);
     }
 }
@@ -133,48 +138,59 @@ function drawMarkers(settings) {
     for (marker of settings.marker) {
         let color = marker.color ? marker.color : settings.fractionColor;
 
-        settings.d3svg.append('line')
+        settings.g.append('line')
             .attr('x1', settings.borderWidth + calcHorizFractionPosition(settings, marker.fraction))
             .attr('y1', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 : 0)
             .attr('x2', settings.borderWidth + calcHorizFractionPosition(settings, marker.fraction))
-            .attr('y2', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 + settings.textSize : -settings.textSize)
+            .attr('y2', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize : -settings.fontSize)
             .style('stroke-width', 1)
             .style('stroke', color);
 
         if (marker.label) {
-            settings.d3svg.append('text')
+            settings.g.append('text')
                 .text(marker.label)
                 .attr('x', settings.borderWidth + calcHorizFractionPosition(settings, marker.fraction))
-                .attr('y', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 + settings.textSize * 2 : -(settings.textSize + settings.textSize / 3))
+                .attr('y', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize * 2 : -(settings.fontSize + settings.fontSize / 3))
                 .attr('text-anchor', 'middle')
                 .attr('fill', color)
-                .attr('font-family', 'sans-serif')
-                .attr('font-size', settings.textSize);
+                .attr('font-family', settings.fontFamily)
+                .attr('font-size', settings.fontSize);
+        }
+    }
+}
+
+function removeGauge(settings) {
+    if (settings && settings.svg) {
+        let svg = settings.svg;
+        while (svg.firstChild) {
+            svg.removeChild(svg.firstChild);
         }
     }
 }
 
 
 function drawGauge(settings) {
+    validateSettings(settings);
+    removeGauge(settings);
 
     let d3svg = settings.d3svg;
 
-    d3svg.append('svg')
-        .attr('id', settings.id + 'svg')
+    d3svg
         .attr('width', settings.progressWidth + settings.margin.left + settings.margin.right + settings.borderWidth * 2)
-        .attr('height', settings.progressHeight + settings.margin.top + settings.margin.bottom + settings.borderWidth * 2)
-        .append('g')
+        .attr('height', settings.progressHeight + settings.margin.top + settings.margin.bottom + settings.borderWidth * 2);
+
+    settings.g = d3svg.append('g')
         .attr('transform', 'translate(' + (settings.margin.left) + "," + (settings.margin.top) + ')');
 
     //progress frame
-    d3svg.append('rect')
+    settings.g.append('rect')
         .attr('x', 0)
         .attr('y', 0)
         .attr('width', settings.progressWidth + settings.borderWidth * 2)
         .attr('height', settings.progressHeight + settings.borderWidth * 2)
         .style('fill', settings.borderColor);
 
-    d3svg.append('rect')
+    settings.g.append('rect')
         .attr('x', settings.borderWidth)
         .attr('y', settings.borderWidth)
         .attr('width', settings.progressWidth)
@@ -182,7 +198,7 @@ function drawGauge(settings) {
         .style('fill', settings.emptyColor);
 
     //progress bar
-    d3svg.append('rect')
+    settings.g.append('rect')
         .attr('x', settings.borderWidth)
         .attr('y', settings.borderWidth)
         .attr('width', calcHorizFractionPosition(settings))
@@ -197,25 +213,24 @@ function drawGauge(settings) {
 
     //left label
     if (settings.label.left) {
-        d3svg.append('text')
+        settings.g.append('text')
             .text(settings.label.left)
-            .attr('x', -settings.textSize / 2)
+            .attr('x', -settings.margin.left)
             .attr('y', calcVertTextPosition(settings))
-            .attr('text-anchor', 'end')
             .attr('fill', settings.labelColor)
-            .attr('font-family', 'sans-serif')
-            .attr('font-size', settings.textSize);
+            .attr('font-family', settings.fontFamily)
+            .attr('font-size', settings.fontSize);
     }
 
     //right label
     if (settings.label.right) {
-        d3svg.append('text')
+        settings.g.append('text')
             .text(settings.label.right)
-            .attr('x', settings.progressWidth + settings.borderWidth * 2 + settings.textSize / 2)
+            .attr('x', settings.progressWidth + settings.borderWidth * 2 + settings.fontSize / 2)
             .attr('y', calcVertTextPosition(settings))
             .attr('fill', settings.labelColor)
-            .attr('font-family', 'sans-serif')
-            .attr('font-size', settings.textSize);
+            .attr('font-family', settings.fontFamily)
+            .attr('font-size', settings.fontSize);
     }
 
     drawMarkers(settings);
@@ -229,11 +244,12 @@ function HorizGauge(settings) {
 HorizGauge[Symbol.species] = HorizGauge;
 
 /**
- * Draw the Horiz Gauge inside of the provided <code>settings.svg</code> DOM tree element.
+ * Draw the HorizGauge inside of the provided <code>settings.svg</code> DOM tree element.
  */
-HorizGauge.prototype.draw = function () {
-    validateSettings(this.settings);
-    this.remove();
+HorizGauge.prototype.draw = function (settings) {
+    if (settings) {
+        this.settings = settings;
+    }
     drawGauge(this.settings);
 }
 
@@ -241,12 +257,7 @@ HorizGauge.prototype.draw = function () {
  * Clear the gauge from the provided <code>settings.svg</code> DOM tree element
  */
 HorizGauge.prototype.remove = function () {
-    if (this.settings.svg) {
-        let svg = this.settings.svg;
-        while (svg.firstChild) {
-            svg.removeChild(svg.firstChild);
-        }
-    }
+    removeGauge(this.settings);
 }
 
 /**

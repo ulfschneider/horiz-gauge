@@ -26,32 +26,33 @@
 
 <body>
     <h1>The HorizGauge Playground</h1>
-    <p>A d3.js progress bar with some options</p>
-    
-    <div id="gauge"></div>    
+    <p>A d3.js horizontal gauge with some options</p>
 
-    <div>Change the HorizGauge settings below and see the effect above <strong>on the fly</strong>. Please reload this page for a reset of all settings.</div>
+    <svg id="gauge"></svg>
+
+    <div>Change the HorizGauge settings below and see the effect above <strong>on the fly</strong>. Please reload this
+        page for a reset of all settings.</div>
     <div id="error"></div>
     <textarea id="config" spellcheck="false" autocorrect="off" autocapitalize="off" rows="75"></textarea>
 
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="./horiz-gauge.js"></script>
-    <script>    
+    <script src="./bundle.js"></script>
+    <script>
+        var horizGauge = require('horiz-gauge');
         var config = {
             id: 'gauge',
             fraction: .58,
             progressWidth: 300,
             progressHeight: 26,
             borderColor: 'lightgray',
-            borderWidth: 4,            
+            borderWidth: 4,
             emptyColor: 'lightgray',
             fractionColor: 'black',
             fractionExceedColor: 'red',
             fractionLabelColor: 'white',
             labelColor: 'black',
-            textSize: 16,
+            fontSize: 16,
             margin: {
-                left: 230,
+                left: 100,
                 top: 100,
                 right: 100,
                 bottom: 100
@@ -83,27 +84,32 @@
                 position: 'BOTTOM'
             }],
             divider: [{
-                fraction: .2
+                fraction: .2,
+                color: ""
             }, {
-                fraction: .4
+                fraction: .4,
+                color: ""
             }, {
-                fraction: .6
+                fraction: .6,
+                color: ""
             }, {
-                fraction: .8
+                fraction: .8,
+                color: ""
             }]
 
         }
-
-        var gauge = new HorizGauge(config);
-
-        var error = document.getElementById('error');
         var textarea = document.getElementById('config');
         textarea.value = JSON.stringify(config, null, '  ');
-        textarea.oninput = function() {
+        var error = document.getElementById('error');
+        
+        var gauge = horizGauge(config);
+        gauge.draw();
+
+        textarea.oninput = function () {
             try {
-                editConfig = JSON.parse(textarea.value);
                 error.innerHTML = '';
-                gauge.configure(editConfig);
+                editConfig = JSON.parse(textarea.value);
+                gauge.draw(editConfig);
             } catch (e) {
                 console.log(e);
                 error.innerHTML = e;
