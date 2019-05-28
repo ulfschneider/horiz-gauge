@@ -87,11 +87,21 @@ function calcHorizFractionPosition(settings, fraction) {
     return Math.max(0, Math.min(settings.progressWidth * f, settings.progressWidth));
 }
 
+function formatPercentage(percentage) {
+    let fixed = 0;
+    if (percentage > 0 && percentage < 0.01) {
+        fixed = 2;
+    } else if (percentage < 1 && percentage > 0.99) {
+        fixed = 2;
+    }
+    return (percentage ? percentage * 100 : 0).toFixed(fixed) + '%';
+}
+
 function determineFractionLabelText(settings) {
     if (settings.label.fraction) {
         return settings.label.fraction;
     } else {
-        return Math.round(settings.fraction * 100) + '%';
+        return formatPercentage(settings.fraction);
     }
 }
 
