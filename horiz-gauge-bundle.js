@@ -20695,6 +20695,13 @@ const d3 = require('d3');
 const Base64 = require('js-base64').Base64;
 const _ = require('underscore');
 
+function equalsIgnoreCase(a, b) {
+    if (a && b) {
+        return a.toLowerCase() == b.toLowerCase();
+    } else {
+        return false;
+    }
+}
 
 function validateSettings(settings) {
 
@@ -20840,6 +20847,24 @@ function drawProgressLabel(settings) {
 }
 
 function drawMarkers(settings) {
+    const determineTextAnchor = function (textAnchor) {
+        if (equalsIgnoreCase('start', textAnchor)) {
+            return 'start';
+        } else if (equalsIgnoreCase('end', textAnchor)) {
+            return 'end';
+        }
+        return 'middle';
+    };
+    const determineLength = function (textAnchor, label) {
+        let anchor = determineTextAnchor(textAnchor);
+        let length = label.node().getComputedTextLength();
+        if ('start' == anchor || 'end' == anchor) {
+            return length;
+        } else {
+            return length / 2;
+        }
+    };
+
     for (marker of settings.marker) {
         let color = marker.color ? marker.color : settings.fractionColor;
         let fraction = marker.fraction;
@@ -20847,12 +20872,11 @@ function drawMarkers(settings) {
             fraction = fraction / settings.fraction;
         }
 
-
         settings.g.append('line')
             .attr('x1', settings.borderWidth + Math.min(settings.progressWidth - 1, Math.max(1, calcHorizFractionPosition(settings, fraction))))
-            .attr('y1', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 : 0)
+            .attr('y1', equalsIgnoreCase(marker.position, 'BOTTOM') ? settings.progressHeight + settings.borderWidth * 2 : 0)
             .attr('x2', settings.borderWidth + Math.min(settings.progressWidth - 1, Math.max(1, calcHorizFractionPosition(settings, fraction))))
-            .attr('y2', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize : -settings.fontSize)
+            .attr('y2', equalsIgnoreCase(marker.position, 'BOTTOM') ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize : -settings.fontSize)
             .style('stroke-width', 1)
             .style('stroke', color);
 
@@ -20860,20 +20884,19 @@ function drawMarkers(settings) {
             let label = settings.g.append('text')
                 .text(marker.label)
                 .attr('x', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
-                .attr('y', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize * 2 : -(settings.fontSize + settings.fontSize / 3))
-                .attr('text-anchor', 'middle')
+                .attr('y', equalsIgnoreCase(marker.position, 'BOTTOM') ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize * 2 : -(settings.fontSize + settings.fontSize / 3))
+                .attr('text-anchor', determineTextAnchor(marker.textAnchor))
                 .attr('fill', color)
                 .attr('font-family', settings.fontFamily)
                 .attr('font-size', settings.fontSize);
 
-            let length = label.node()
-                .getComputedTextLength();
             let fractionPos = calcHorizFractionPosition(settings, fraction);
 
-            if (fractionPos + length / 2 > settings.progressWidth) {
+            if (fractionPos + determineLength(marker.textAnchor, label) > settings.progressWidth) {
                 label.attr('x', settings.borderWidth + settings.progressWidth)
                     .attr('text-anchor', 'end');
-            } else if (fractionPos - length / 2 < 0) {
+            }
+            if (fractionPos - determineLength(marker.textAnchor, label) < 0) {
                 label.attr('x', settings.borderWidth)
                     .attr('text-anchor', 'start');
             }
