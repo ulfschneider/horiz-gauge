@@ -158,9 +158,9 @@ function drawMarkers(settings) {
 
 
         settings.g.append('line')
-            .attr('x1', settings.borderWidth + Math.max(1, calcHorizFractionPosition(settings, fraction)))
+            .attr('x1', settings.borderWidth + Math.min(settings.progressWidth - 1, Math.max(1, calcHorizFractionPosition(settings, fraction))))
             .attr('y1', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 : 0)
-            .attr('x2', settings.borderWidth + Math.max(1, calcHorizFractionPosition(settings, fraction)))
+            .attr('x2', settings.borderWidth + Math.min(settings.progressWidth - 1, Math.max(1, calcHorizFractionPosition(settings, fraction))))
             .attr('y2', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize : -settings.fontSize)
             .style('stroke-width', 1)
             .style('stroke', color);
