@@ -158,15 +158,15 @@ function drawMarkers(settings) {
 
 
         settings.g.append('line')
-            .attr('x1', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
+            .attr('x1', settings.borderWidth + Math.max(1, calcHorizFractionPosition(settings, fraction)))
             .attr('y1', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 : 0)
-            .attr('x2', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
+            .attr('x2', settings.borderWidth + Math.max(1, calcHorizFractionPosition(settings, fraction)))
             .attr('y2', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize : -settings.fontSize)
             .style('stroke-width', 1)
             .style('stroke', color);
 
         if (marker.label) {
-            settings.g.append('text')
+            let label = settings.g.append('text')
                 .text(marker.label)
                 .attr('x', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
                 .attr('y', marker.position == 'BOTTOM' ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize * 2 : -(settings.fontSize + settings.fontSize / 3))
@@ -174,6 +174,18 @@ function drawMarkers(settings) {
                 .attr('fill', color)
                 .attr('font-family', settings.fontFamily)
                 .attr('font-size', settings.fontSize);
+
+            let length = label.node()
+                .getComputedTextLength();
+            let fractionPos = calcHorizFractionPosition(settings, fraction);
+
+            if (fractionPos + length / 2 > settings.progressWidth) {
+                label.attr('x', settings.borderWidth + settings.progressWidth)
+                    .attr('text-anchor', 'end');
+            } else if (fractionPos - length / 2 < 0) {
+                label.attr('x', settings.borderWidth)
+                    .attr('text-anchor', 'start');
+            }
         }
     }
 }
