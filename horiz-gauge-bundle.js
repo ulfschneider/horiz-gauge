@@ -20703,6 +20703,23 @@ function equalsIgnoreCase(a, b) {
     }
 }
 
+function determineMarkerTextAnchor(marker) {
+    if (equalsIgnoreCase('start', marker.textAnchor)) {
+        return 'start';
+    } else if (equalsIgnoreCase('end', marker.textAnchor)) {
+        return 'end';
+    }
+    return 'middle';
+}
+
+function determineMarkerDistance(settings, marker) {
+    if (!marker.distance) {
+        return settings.fontSize / 2;
+    }
+    return marker.distance;
+};
+
+
 function validateSettings(settings) {
 
     if (!settings) {
@@ -20765,6 +20782,8 @@ function validateSettings(settings) {
             m.label = m.label ? m.label : '';
             m.color = m.color ? m.color : '';
             m.position = m.position ? m.position : '';
+            m.textAnchor = determineMarkerTextAnchor(m);
+            m.distance = determineMarkerDistance(settings, m);
         }
     }
 
@@ -20847,18 +20866,9 @@ function drawProgressLabel(settings) {
 }
 
 function drawMarkers(settings) {
-    const determineTextAnchor = function (textAnchor) {
-        if (equalsIgnoreCase('start', textAnchor)) {
-            return 'start';
-        } else if (equalsIgnoreCase('end', textAnchor)) {
-            return 'end';
-        }
-        return 'middle';
-    };
     const determineLength = function (textAnchor, label) {
-        let anchor = determineTextAnchor(textAnchor);
         let length = label.node().getComputedTextLength();
-        if ('start' == anchor || 'end' == anchor) {
+        if ('start' == textAnchor || 'end' == textAnchor) {
             return length;
         } else {
             return length / 2;
@@ -20876,7 +20886,7 @@ function drawMarkers(settings) {
             .attr('x1', settings.borderWidth + Math.min(settings.progressWidth - 1, Math.max(1, calcHorizFractionPosition(settings, fraction))))
             .attr('y1', equalsIgnoreCase(marker.position, 'BOTTOM') ? settings.progressHeight + settings.borderWidth * 2 : 0)
             .attr('x2', settings.borderWidth + Math.min(settings.progressWidth - 1, Math.max(1, calcHorizFractionPosition(settings, fraction))))
-            .attr('y2', equalsIgnoreCase(marker.position, 'BOTTOM') ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize : -settings.fontSize)
+            .attr('y2', equalsIgnoreCase(marker.position, 'BOTTOM') ? settings.progressHeight + settings.borderWidth * 2 + marker.distance : -marker.distance)
             .style('stroke-width', 1)
             .style('stroke', color);
 
@@ -20884,8 +20894,8 @@ function drawMarkers(settings) {
             let label = settings.g.append('text')
                 .text(marker.label)
                 .attr('x', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
-                .attr('y', equalsIgnoreCase(marker.position, 'BOTTOM') ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize * 2 : -(settings.fontSize + settings.fontSize / 3))
-                .attr('text-anchor', determineTextAnchor(marker.textAnchor))
+                .attr('y', equalsIgnoreCase(marker.position, 'BOTTOM') ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize + marker.distance : -(marker.distance + settings.fontSize / 3))
+                .attr('text-anchor', marker.textAnchor)
                 .attr('fill', color)
                 .attr('font-family', settings.fontFamily)
                 .attr('font-size', settings.fontSize);
