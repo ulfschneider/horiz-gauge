@@ -12,6 +12,10 @@
             font-family: sans-serif;
         }
 
+        a {
+            color: black;
+        }
+
         textarea {
             width: 100%;
             outline: none;
@@ -28,13 +32,13 @@
 </head>
 
 <body>
-    <h1>The HorizGauge Playground</h1>
+    <h1>The horiz-gauge Playground</h1>
     <p>A d3.js horizontal gauge with some options</p>
 
     <svg id="gauge"></svg>
 
-    <p>Change the HorizGauge settings below and see the effect above <strong>on the fly</strong>. Please reload this
-        page for a reset of all settings.</p>
+    <p>Change the horiz-gauge settings below and see the effect above <strong>on the fly</strong>. Please <a href='#' onclick='location.reload();'>reload this
+        page for a reset of all settings</a>.</p>
     <div id="error"></div>
     <textarea id="config" spellcheck="false" autocorrect="off" autocapitalize="off" rows="75"></textarea>
 
