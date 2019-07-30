@@ -52,11 +52,12 @@ function validateSettings(settings) {
     settings.progressHeight = settings.progressHeight ? settings.progressHeight : settings.fontSize + 2;
     settings.borderColor = settings.borderColor ? settings.borderColor : '#ccc';
     settings.emptyColor = settings.emptyColor ? settings.emptyColor : settings.borderColor;
+    settings.borderWidth = _.isNumber(settings.borderWidth) ? settings.borderWidth : 0;
+
     settings.fractionColor = settings.fractionColor ? settings.fractionColor : '#222';
     settings.fractionExceedColor = settings.fractionExceedColor ? settings.fractionExceedColor : 'red';
     settings.fractionLabelColor = settings.fractionLabelColor ? settings.fractionLabelColor : 'white';
-    settings.labelColor = settings.labelColor ? settings.labelColor : settings.fractionColor;
-    settings.borderWidth = _.isNumber(settings.borderWidth) ? settings.borderWidth : 0;
+    settings.fractionLabel = settings.fractionLabel ? settings.fractionLabel : '';
 
     if (_.isUndefined(settings.margin) || _.isEmpty(settings.margin)) {
         settings.margin = {
@@ -71,16 +72,24 @@ function validateSettings(settings) {
         settings.margin.right = settings.margin.right ? settings.margin.right : 0;
         settings.margin.boÌttom = settings.margin.bottom ? settings.margin.bottom : 0;
     }
-    if (_.isUndefined(settings.label) || _.isEmpty(settings.label)) {
-        settings.label = {
-            fraction: '',
-            left: '',
-            right: ''
+    if (_.isUndefined(settings.leftLabel) || _.isEmpty(settings.leftLabel)) {
+        settings.leftLabel = {
+            label: '',
+            color: ''
         }
     } else {
-        settings.label.fraction = settings.label.fraction ? settings.label.fraction : '';
-        settings.label.left = settings.label.left ? settings.label.left : '';
-        settings.label.right = settings.label.right ? settings.label.right : '';
+        settings.leftLabel.label = settings.leftLabel.label ? settings.leftLabel.label : '';
+        settings.leftLabel.color = settings.leftLabel.color ? settings.leftLabel.color : settings.fractionColor;
+    }
+
+    if (_.isUndefined(settings.rightLabel) || _.isEmpty(settings.rightLabel)) {
+        settings.rightLabel = {
+            label: '',
+            color: ''
+        }
+    } else {
+        settings.rightLabel.label = settings.rightLabel.label ? settings.rightLabel.label : '';
+        settings.rightLabel.color = settings.rightLabel.color ? settings.rightLabel.color : settings.fractionColor;
     }
 
     if (_.isUndefined(settings.marker)) {
@@ -124,8 +133,8 @@ function formatPercentage(percentage) {
 }
 
 function determineFractionLabelText(settings) {
-    if (settings.label.fraction) {
-        return settings.label.fraction;
+    if (settings.fractionLabel) {
+        return settings.fractionLabel;
     } else {
         return formatPercentage(settings.fraction);
     }
@@ -276,23 +285,23 @@ function drawGauge(settings) {
     drawProgressLabel(settings);
 
     //left label
-    if (settings.label.left) {
+    if (settings.leftLabel.label) {
         settings.g.append('text')
-            .text(settings.label.left)
+            .text(settings.leftLabel.label)
             .attr('x', -settings.margin.left)
             .attr('y', calcVertTextPosition(settings))
-            .attr('fill', settings.labelColor)
+            .attr('fill', settings.leftLabel.color)
             .attr('font-family', settings.fontFamily)
             .attr('font-size', settings.fontSize);
     }
 
     //right label
-    if (settings.label.right) {
+    if (settings.rightLabel.label) {
         settings.g.append('text')
-            .text(settings.label.right)
+            .text(settings.rightLabel.label)
             .attr('x', settings.progressWidth + settings.borderWidth * 2 + settings.fontSize / 2)
             .attr('y', calcVertTextPosition(settings))
-            .attr('fill', settings.labelColor)
+            .attr('fill', settings.rightLabel.color)
             .attr('font-family', settings.fontFamily)
             .attr('font-size', settings.fontSize);
     }

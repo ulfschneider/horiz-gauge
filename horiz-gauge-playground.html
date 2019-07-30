@@ -15,6 +15,9 @@
         textarea {
             width: 100%;
             outline: none;
+            border: none;
+            font-family: monospace;
+            font-size: 1.1em;
         }
 
         #error {
@@ -30,78 +33,108 @@
 
     <svg id="gauge"></svg>
 
-    <div>Change the HorizGauge settings below and see the effect above <strong>on the fly</strong>. Please reload this
-        page for a reset of all settings.</div>
+    <p>Change the HorizGauge settings below and see the effect above <strong>on the fly</strong>. Please reload this
+        page for a reset of all settings.</p>
     <div id="error"></div>
     <textarea id="config" spellcheck="false" autocorrect="off" autocapitalize="off" rows="75"></textarea>
 
     <script src="./horiz-gauge-bundle.js"></script>
-    <script>
+    <script>                
         var horizGauge = require('horiz-gauge');
-        var config = {
-            id: 'gauge',
-            fraction: .58,
-            progressWidth: 300,
-            progressHeight: 26,
-            borderColor: 'lightgray',
-            borderWidth: 4,
-            emptyColor: 'lightgray',
-            fractionColor: 'black',
-            fractionExceedColor: 'red',
-            fractionLabelColor: 'white',
-            labelColor: 'black',
-            fontSize: 16,
-            margin: {
-                left: 100,
-                top: 100,
-                right: 100,
-                bottom: 100
-            },
-            label: {
-                fraction: '',
-                left: 'left label',
-                right: 'right label'
-            },
-            marker: [{
-                fraction: 0,
-                label: 'G1',
-                color: '',
-                position: 'TOP'
-            }, {
-                fraction: .2,
-                label: 'G2',
-                color: '',
-                position: 'TOP'
-            }, {
-                fraction: .8,
-                label: 'G3',
-                color: 'lightgray',
-                position: 'BOTTOM'
-            }, {
-                fraction: 1,
-                label: 'G4',
-                color: 'lightgray',
-                position: 'BOTTOM'
-            }],
-            divider: [{
-                fraction: .2,
-                color: ""
-            }, {
-                fraction: .4,
-                color: ""
-            }, {
-                fraction: .6,
-                color: ""
-            }, {
-                fraction: .8,
-                color: ""
-            }]
+        var autosize = require('autosize');
 
+        var config = {
+            "id": "gauge",
+            "fraction": 0.58,
+            "progressWidth": 300,
+            "progressHeight": 26,
+            "borderColor": "lightgray",
+            "borderWidth": 4,
+            "emptyColor": "lightgray",
+            "fractionColor": "black",
+            "fractionExceedColor": "red",
+            "fractionLabelColor": "white",
+            "fontSize": 16,
+            "margin": {
+                "left": 75,
+                "top": 100,
+                "right": 100,
+                "bottom": 100
+            },
+            "leftLabel": {
+                "label": "left label",
+                "color": "green"
+            },
+            "rightLabel": {
+                "label": "right label",
+                "color": "purple"
+            },
+            "marker": [
+                {
+                    "fraction": 0,
+                    "label": "G1",
+                    "color": "",
+                    "position": "TOP",
+                    "distance": 20,
+                    "textAnchor": "start"
+                },
+                {
+                    "fraction": 0.2,
+                    "label": "G2",
+                    "color": "",
+                    "position": "TOP",
+                    "textAnchor": "end"
+                },
+                {
+                    "fraction": 0.5,
+                    "label": "½",
+                    "color": "red",
+                    "position": "TOP",
+                    "textAnchor": "middle"
+                },
+
+                {
+                    "fraction": 0.8,
+                    "label": "G3",
+                    "color": "lightgray",
+                    "position": "BOTTOM",
+                    "textAnchor": "start"
+
+                },
+                {
+                    "fraction": 1,
+                    "label": "G4",
+                    "color": "lightgray",
+                    "position": "BOTTOM",
+                    "distance": 20,
+                    "textAnchor": "start"
+                }
+            ],
+            "divider": [
+                {
+                    "fraction": 0.2,
+                    "color": ""
+                },
+                {
+                    "fraction": 0.4,
+                    "color": ""
+                },
+                {
+                    "fraction": 0.6,
+                    "color": ""
+                },
+                {
+                    "fraction": 0.8,
+                    "color": ""
+                }
+            ]
         }
         var textarea = document.getElementById('config');
         textarea.value = JSON.stringify(config, null, '  ');
+        autosize(textarea);
+
         var error = document.getElementById('error');
-        
+
         var gauge = horizGauge(config);
         gauge.draw();
 
