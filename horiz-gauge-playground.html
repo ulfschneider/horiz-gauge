@@ -22,6 +22,7 @@
             border: none;
             font-family: monospace;
             font-size: 1.1em;
+            caret-color: red;
         }
 
         #error {
@@ -37,48 +38,53 @@
 
     <svg id="gauge"></svg>
 
-    <p>Change the horiz-gauge settings below and see the effect above <strong>on the fly</strong>. Please <a href='#' onclick='location.reload();'>reload this
-        page for a reset of all settings</a>.</p>
+    <p>Change the horiz-gauge settings below and see the effect above <strong>on the fly</strong>. Please <a href='#'
+            onclick='location.reload();'>reload this
+            page for a reset of all settings</a>.</p>
     <div id="error"></div>
     <textarea id="config" spellcheck="false" autocorrect="off" autocapitalize="off" rows="75"></textarea>
 
     <script src="./horiz-gauge-bundle.js"></script>
-    <script>                
+    <script>
         var horizGauge = require('horiz-gauge');
         var autosize = require('autosize');
 
         var config = {
             "id": "gauge",
             "fraction": 0.58,
+            "fractionLabel": "",
+            "fractionColor": "black",
+            "fractionExceedColor": "red",
+            "fractionLabelColor": "white",
+            "emptyColor": "lightgray",
             "progressWidth": 300,
             "progressHeight": 26,
             "borderColor": "lightgray",
             "borderWidth": 4,
-            "emptyColor": "lightgray",
-            "fractionColor": "black",
-            "fractionExceedColor": "red",
-            "fractionLabelColor": "white",
+            "font-family": 'monospace',
             "fontSize": 16,
             "margin": {
-                "left": 75,
+                "left": 100,
                 "top": 100,
                 "right": 100,
                 "bottom": 100
             },
             "leftLabel": {
                 "label": "left label",
-                "color": "green"
+                "color": "green",
+                "textAnchor": "end"
             },
             "rightLabel": {
                 "label": "right label",
-                "color": "purple"
+                "color": "purple",
+                "textAnchor": "start"
             },
-            "marker": [
+            "markers": [
                 {
                     "fraction": 0,
                     "label": "G1",
                     "color": "",
-                    "position": "TOP",
+                    "position": "top",
                     "distance": 20,
                     "textAnchor": "start"
                 },
@@ -86,14 +92,14 @@
                     "fraction": 0.2,
                     "label": "G2",
                     "color": "",
-                    "position": "TOP",
+                    "position": "top",
                     "textAnchor": "end"
                 },
                 {
                     "fraction": 0.5,
                     "label": "½",
                     "color": "red",
-                    "position": "TOP",
+                    "position": "top",
                     "textAnchor": "middle"
                 },
 
@@ -101,7 +107,7 @@
                     "fraction": 0.8,
                     "label": "G3",
                     "color": "lightgray",
-                    "position": "BOTTOM",
+                    "position": "bottom",
                     "textAnchor": "start"
 
                 },
@@ -109,12 +115,12 @@
                     "fraction": 1,
                     "label": "G4",
                     "color": "lightgray",
-                    "position": "BOTTOM",
+                    "position": "bottom",
                     "distance": 20,
                     "textAnchor": "start"
                 }
             ],
-            "divider": [
+            "dividers": [
                 {
                     "fraction": 0.2,
                     "color": ""

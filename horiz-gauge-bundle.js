@@ -20983,6 +20983,7 @@ Object.defineProperty(exports, "event", {get: function() { return d3Selection.ev
 const d3 = require('d3');
 const Base64 = require('js-base64').Base64;
 const _ = require('underscore');
+const DIVIDER_STROKE_WIDTH = 1;
 
 function equalsIgnoreCase(a, b) {
     if (a && b) {
@@ -20992,10 +20993,17 @@ function equalsIgnoreCase(a, b) {
     }
 }
 
+function determineMarkerPosition(marker) {
+    if (marker && equalsIgnoreCase('bottom', marker.position)) {
+        return 'bottom';
+    }
+    return 'top';
+}
+
 function determineMarkerTextAnchor(marker) {
-    if (equalsIgnoreCase('start', marker.textAnchor)) {
+    if (marker && equalsIgnoreCase('start', marker.textAnchor)) {
         return 'start';
-    } else if (equalsIgnoreCase('end', marker.textAnchor)) {
+    } else if (marker && equalsIgnoreCase('end', marker.textAnchor)) {
         return 'end';
     }
     return 'middle';
@@ -21007,6 +21015,15 @@ function determineMarkerDistance(settings, marker) {
     }
     return marker.distance;
 };
+
+function determineLabelTextAnchor(label) {
+    if (label && equalsIgnoreCase('middle', label.textAnchor)) {
+        return 'middle';
+    } else if (label && equalsIgnoreCase('end', label.textAnchor)) {
+        return 'end';
+    }
+    return 'start';
+}
 
 
 function validateSettings(settings) {
@@ -21055,42 +21072,46 @@ function validateSettings(settings) {
     if (_.isUndefined(settings.leftLabel) || _.isEmpty(settings.leftLabel)) {
         settings.leftLabel = {
             label: '',
-            color: ''
+            color: '',
+            textAnchor: determineLabelTextAnchor()
         }
     } else {
         settings.leftLabel.label = settings.leftLabel.label ? settings.leftLabel.label : '';
         settings.leftLabel.color = settings.leftLabel.color ? settings.leftLabel.color : settings.fractionColor;
+        settings.leftLabel.textAnchor = settings.leftLabel.textAnchor ? settings.leftLabel.textAnchor : determineLabelTextAnchor();
     }
 
     if (_.isUndefined(settings.rightLabel) || _.isEmpty(settings.rightLabel)) {
         settings.rightLabel = {
             label: '',
-            color: ''
+            color: '',
+            textAnchor: determineLabelTextAnchor()
         }
     } else {
         settings.rightLabel.label = settings.rightLabel.label ? settings.rightLabel.label : '';
         settings.rightLabel.color = settings.rightLabel.color ? settings.rightLabel.color : settings.fractionColor;
+        settings.rightLabel.textAnchor = settings.rightLabel.textAnchor ? settings.rightLabel.textAnchor : determineLabelTextAnchor();
     }
 
-    if (_.isUndefined(settings.marker)) {
-        settings.marker = [];
+    if (_.isUndefined(settings.markers)) {
+        settings.markers = [];
     } else {
-        for (m of settings.marker) {
+        for (m of settings.markers) {
             m.fraction = m.fraction ? m.fraction : 0;
             m.label = m.label ? m.label : '';
             m.color = m.color ? m.color : '';
-            m.position = m.position ? m.position : '';
+            m.position = determineMarkerPosition(m);
             m.textAnchor = determineMarkerTextAnchor(m);
             m.distance = determineMarkerDistance(settings, m);
         }
     }
 
-    if (_.isUndefined(settings.divider)) {
-        settings.divider = [];
+    if (_.isUndefined(settings.dividers)) {
+        settings.dividers = [];
     } else {
-        for (d of settings.divider) {
+        for (d of settings.dividers) {
             d.fraction = d.fraction ? d.fraction : 0;
-            d.color = d.color ? d.color : '';
+            d.color = d.color ? d.color : settings.emptyColor;
         }
     }
 
@@ -21099,7 +21120,7 @@ function validateSettings(settings) {
 
 function calcHorizFractionPosition(settings, fraction) {
     let f = _.isUndefined(fraction) ? settings.fraction : fraction;
-    return Math.max(0, Math.min(settings.progressWidth * f, settings.progressWidth));
+    return Math.max(DIVIDER_STROKE_WIDTH / 2, Math.min(settings.progressWidth * f, settings.progressWidth - DIVIDER_STROKE_WIDTH / 2));
 }
 
 function formatPercentage(percentage) {
@@ -21126,7 +21147,7 @@ function calcVertTextPosition(settings) {
 
 function drawDividers(settings) {
 
-    for (divider of settings.divider) {
+    for (divider of settings.dividers) {
         let color = divider.color ? divider.color : settings.emptyColor;
         let fraction = divider.fraction;
         if (settings.fraction > 1.0) {
@@ -21137,7 +21158,7 @@ function drawDividers(settings) {
             .attr('y1', settings.borderWidth)
             .attr('x2', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
             .attr('y2', settings.progressHeight + settings.borderWidth)
-            .style('stroke-width', 1)
+            .style('stroke-width', DIVIDER_STROKE_WIDTH)
             .style('stroke', color);
     }
 
@@ -21173,7 +21194,7 @@ function drawMarkers(settings) {
         }
     };
 
-    for (marker of settings.marker) {
+    for (marker of settings.markers) {
         let color = marker.color ? marker.color : settings.fractionColor;
         let fraction = marker.fraction;
         if (settings.fraction > 1.0) {
@@ -21181,18 +21202,18 @@ function drawMarkers(settings) {
         }
 
         settings.g.append('line')
-            .attr('x1', settings.borderWidth + Math.min(settings.progressWidth - 1, Math.max(1, calcHorizFractionPosition(settings, fraction))))
-            .attr('y1', equalsIgnoreCase(marker.position, 'BOTTOM') ? settings.progressHeight + settings.borderWidth * 2 : 0)
-            .attr('x2', settings.borderWidth + Math.min(settings.progressWidth - 1, Math.max(1, calcHorizFractionPosition(settings, fraction))))
-            .attr('y2', equalsIgnoreCase(marker.position, 'BOTTOM') ? settings.progressHeight + settings.borderWidth * 2 + marker.distance : -marker.distance)
-            .style('stroke-width', 1)
+            .attr('x1', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
+            .attr('y1', marker.position ==  'bottom' ? settings.progressHeight + settings.borderWidth * 2 : 0)
+            .attr('x2', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
+            .attr('y2', marker.position == 'bottom' ? settings.progressHeight + settings.borderWidth * 2 + marker.distance : -marker.distance)
+            .style('stroke-width', DIVIDER_STROKE_WIDTH)
             .style('stroke', color);
 
         if (marker.label) {
             let label = settings.g.append('text')
                 .text(marker.label)
                 .attr('x', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
-                .attr('y', equalsIgnoreCase(marker.position, 'BOTTOM') ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize + marker.distance : -(marker.distance + settings.fontSize / 3))
+                .attr('y', marker.position == 'bottom' ? settings.progressHeight + settings.borderWidth * 2 + settings.fontSize + marker.distance : -(marker.distance + settings.fontSize / 3))
                 .attr('text-anchor', marker.textAnchor)
                 .attr('fill', color)
                 .attr('font-family', settings.fontFamily)
@@ -21266,30 +21287,125 @@ function drawGauge(settings) {
 
     //left label
     if (settings.leftLabel.label) {
-        settings.g.append('text')
+        let leftLabel = settings.g.append('text')
             .text(settings.leftLabel.label)
             .attr('x', -settings.margin.left)
             .attr('y', calcVertTextPosition(settings))
+            .attr('text-anchor', settings.leftLabel.textAnchor)
             .attr('fill', settings.leftLabel.color)
             .attr('font-family', settings.fontFamily)
             .attr('font-size', settings.fontSize);
+        if (settings.leftLabel.textAnchor == 'middle') {
+            leftLabel.attr('x', -settings.margin.left / 2);
+        } else if (settings.leftLabel.textAnchor == 'end') {
+            leftLabel.attr('x', - settings.fontSize / 2);
+        }
     }
 
     //right label
     if (settings.rightLabel.label) {
-        settings.g.append('text')
+        let rightLabel = settings.g.append('text')
             .text(settings.rightLabel.label)
             .attr('x', settings.progressWidth + settings.borderWidth * 2 + settings.fontSize / 2)
             .attr('y', calcVertTextPosition(settings))
+            .attr('text-anchor', settings.rightLabel.textAnchor)
             .attr('fill', settings.rightLabel.color)
             .attr('font-family', settings.fontFamily)
             .attr('font-size', settings.fontSize);
+        if (settings.rightLabel.textAnchor == 'middle') {
+            rightLabel.attr('x', settings.progressWidth + settings.borderWidth * 2 + settings.margin.right / 2);
+        } else if (settings.rightLabel.textAnchor == 'end') {
+            rightLabel.attr('x', settings.progressWidth + settings.borderWidth * 2 + settings.margin.right - settings.fontSize / 2);
+        }
     }
 
     drawMarkers(settings);
 }
 
-
+/**
+Install in your Node project with 
+ * <pre>
+ * npm i horiz-gauge
+ * </pre>
+ * 
+ * and use it inside your code via 
+ * 
+ * <pre>
+ * const gauge = require('horiz-gauge');
+ * </pre>
+ * 
+ * or, alternatively 
+ * 
+ * <pre>
+ * import gauge from 'horize-gauge';
+ * </pre>
+ * 
+ * Create the new gauge objects via
+ * 
+ * <pre>
+ * let diagram = gauge(settings);
+ * </pre> 
+ * Play with the settings of the horiz-gauge by visiting http://htmlpreview.github.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html
+ * 
+ * @constructor
+ * @param {Object} settings - The configuration object for the gauge. 
+ * All data for the gauge is provided with this object. 
+ * @param {String} settings.id - Id of the svg domtree element to bind the gauge to.
+ * @param {Number} [settings.fraction] - Progress indication for the gauge. A value of 0 is indicating no progress, 1.0 is indicating completion. Default is <pre>0.0</pre>
+ * @param {String} [settings.fractionLabel] - A label to show for the progress fraction. Default is <pre>''</pre>.
+ * @param {String} [settings.fractionColor] - The color for the fraction indication. Default is <pre>'#222'</pre>
+ * @param {String} [settings.fractionExceedColor] - The color to use in case fraction > 1.0.
+ * @param {String} [settings.emptyColor] - Color for the non-progress area of the gauge. Default is <pre>borderColor</pre>
+ * @param {Number} [settings.progressWidth] - Width in pixels for the progress gauge without borders and margins. Default is <pre>200</pre>.
+ * @param {Number} [settings.progressHeight] - Height in pixels for the progress gauge without borders and margins. Default is <pre>fontSize + 2</pre>.
+ * @param {String} [settings.borderColor] - Color of the border of the progress gauge. Default is <pre>'#ccc'</pre>
+ * @param {Number} [settings.borderWidth] - Width in pixels for the border of the progress gauge. Defautl is <pre>0</pre>
+ * @param {Number} [settings.fontSize] - Size in pixels for all labels. Default is <pre>16</pre>
+ * @param {String} [settings.fontFamily] - The font to use for all labels. Default is <pre>sans-serif</pre>.
+ * @param {{top: Number, right: Number, bottom: Number, right: Number}} [settings.margin] - The margin for the gauge. Markers and labels are drawn inside of the margin.
+ * Default values are:
+ * <pre>settings.margin = {
+ * top: 0,
+ * right: 0,
+ * bottom: 0,
+ * left: 0 }
+ * </pre>
+ * @param {{label: String, color: String, textAnchor: String}} [settings.leftLabel] - A label to put to the left of the progress gauge. 
+ * Must fit into the left margin. Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>. 
+ * Default values are:
+ * <pre>settings.leftLabel = {
+ *  label: '',
+ *  color: '#222',
+ *  textAnchor: 'start'
+ * }
+ * </pre>
+ * @param {{label: String, color: String, textAnchor: String}} [settings.rightLabel] - A label to put to the right of the progress gauge. 
+ * Must fit into the right margin. Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>. 
+ * Default values are:
+ * <pre>settings.rightLabel = {
+ *  label: '',
+ *  color: '#222',
+ *  textAnchor: 'start'
+ * }
+ * </pre> 
+ * @param {{fraction: Number, label: String, color: String, position: String, distance: Number, textAnchor: String}[]} [settings.markers] - Highlight fractions outside of the gauge.
+ * Each marker is an object with a fraction for the marker and some optional settings. A marker must fit into the margins of the gauge.
+ * Allowed values for <pre>position</pre> are <pre>'top', 'bottom'</pre>
+ * Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>
+ * Example:
+ * <pre>settings.markers = [
+ * { fraction: 0.0, label: 'G1', distance: 20 },
+ * { fraction: 0.2, label: 'G2' },
+ * { fraction: 0.8, label: 'G3', color: 'lightgray', position: 'bottom', textAnchor: 'start'}];</pre>
+ * @param {{fraction: Number, color: String}}[] [settings.dividers] - Highlight fractions inside of the gauge.
+ * Each divider is an object with a fraction and an optional color.
+ * The default for <pre>color</pre> is <pre>emptyColor</pre>.
+ * Example:
+ * <pre>settings.markers = [
+ * { fraction: 0.1 },
+ * { fraction: 0.2, color: 'green' },
+ * { fraction: 0.8, color: 'red'}];</pre>
+ */
 function HorizGauge(settings) {
     this.settings = settings;
 }
@@ -21297,7 +21413,7 @@ function HorizGauge(settings) {
 HorizGauge[Symbol.species] = HorizGauge;
 
 /**
- * Draw the HorizGauge inside of the provided <code>settings.svg</code> DOM tree element.
+ * Draw the gauge inside of the provided <code>settings.svg</code> DOM tree element.
  */
 HorizGauge.prototype.draw = function (settings) {
     if (settings) {
@@ -21314,7 +21430,7 @@ HorizGauge.prototype.remove = function () {
 }
 
 /**
- * Draw the HorizGauge inside of the provided <code>settings.svg</code> DOM tree element 
+ * Draw the gauge inside of the provided <code>settings.svg</code> DOM tree element 
  * and return the result as a string which can be assigned to the SRC attribute of an HTML IMG tag.
  * @returns {string}
  */
@@ -21325,7 +21441,7 @@ HorizGauge.prototype.imageSource = function () {
 }
 
 /**
- * Draw the HorizGauge inside of the provided <code>settings.svg</code> DOM tree element 
+ * Draw the gauge inside of the provided <code>settings.svg</code> DOM tree element 
  * and return the result as a SVG tag string.
  * @returns {string}
  */
