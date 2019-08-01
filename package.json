@@ -1,11 +1,11 @@
 {
   "name": "horiz-gauge",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Draw a svg horizontal progress gauge",
   "main": "horiz-gauge.js",
-  "scripts": {   
-    "build": "browserify -r ./horiz-gauge.js:horiz-gauge -r autosize > ./horiz-gauge-bundle.js && documentation build horiz-gauge.js -f md > README.md",    
-    "test": "jest && browserify -r ./horiz-gauge.js:horiz-gauge -r autosize > ./horiz-gauge-bundle.js && documentation build horiz-gauge.js -f md > README.md"    
+  "scripts": {
+    "build": "browserify -r ./horiz-gauge.js:horiz-gauge -r autosize > ./horiz-gauge-bundle.js && documentation build horiz-gauge.js -f md > README.md",
+    "test": "jest && browserify -r ./horiz-gauge.js:horiz-gauge -r autosize > ./horiz-gauge-bundle.js && documentation build horiz-gauge.js -f md > README.md"
   },
   "repository": {
     "type": "git",
@@ -23,15 +23,15 @@
   },
   "homepage": "https://github.com/ulfschneider/horiz-gauge#readme",
   "dependencies": {
-    "d3": "^5.7.0",
+    "d3": "^5.9.7",
     "js-base64": "^2.5.1",
     "underscore": "^1.9.1"
   },
   "devDependencies": {
-    "acorn": "^6.0.4",
+    "acorn": "^6.2.1",
     "autosize": "^4.0.2",
-    "browserify": "^16.2.3",
-    "coveralls": "^3.0.2",
+    "browserify": "^16.3.0",
+    "coveralls": "^3.0.5",
     "documentation": "^9.1.1",
     "fs": "0.0.1-security",
     "jest": "^23.5.0"
