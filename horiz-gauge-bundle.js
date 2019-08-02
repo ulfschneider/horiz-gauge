@@ -21370,7 +21370,7 @@ Install in your Node project with
  * <pre>
  * let diagram = gauge(settings);
  * </pre> 
- * Play with the settings of the horiz-gauge by visiting http://htmlpreview.github.io/?https://cors.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html
+ * Play with the settings of the horiz-gauge by visiting https://cors.io/?http://htmlpreview.github.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html
  * 
  * @constructor
  * @param {Object} settings - The configuration object for the gauge. 
