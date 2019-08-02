@@ -1,7 +1,7 @@
 {
   "name": "horiz-gauge",
   "version": "0.8.1",
-  "description": "Draw a svg horizontal progress gauge",
+  "description": "Draw a horizontal svg progress gauge",
   "main": "horiz-gauge.js",
   "scripts": {
     "build": "browserify -r ./horiz-gauge.js:horiz-gauge -r autosize > ./horiz-gauge-bundle.js && documentation build horiz-gauge.js -f md > README.md",
