@@ -98,27 +98,26 @@ Play with the settings of the horiz-gauge by visiting [http://htmlpreview.github
 
 ### draw
 
-Draw the gauge inside of the provided <code>settings.svg</code> DOM tree element.
+Draw the gauge.
 
 #### Parameters
 
--   `settings`  
+-   `settings` **[Object][9]?** The configuration object for the gauge. Optional.
+    If provided, will overwrite the settings object already given to the constructor.
 
 ### remove
 
-Clear the gauge from the provided <code>settings.svg</code> DOM tree element
+Clear the gauge.
 
 ### imageSource
 
-Draw the gauge inside of the provided <code>settings.svg</code> DOM tree element 
-and return the result as a string which can be assigned to the SRC attribute of an HTML IMG tag.
+Draw the gauge and return the result as a string which can be assigned to the SRC attribute of an HTML IMG tag.
 
 Returns **[string][10]** 
 
 ### svgSource
 
-Draw the gauge inside of the provided <code>settings.svg</code> DOM tree element 
-and return the result as a SVG tag string.
+Draw the gauge and return the result as a SVG tag string.
 
 Returns **[string][10]** 
 

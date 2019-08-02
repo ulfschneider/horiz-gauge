@@ -21443,7 +21443,9 @@ function HorizGauge(settings) {
 HorizGauge[Symbol.species] = HorizGauge;
 
 /**
- * Draw the gauge inside of the provided <code>settings.svg</code> DOM tree element.
+ * Draw the gauge.
+ * @param {Object} [settings] - The configuration object for the gauge. Optional.
+ * If provided, will overwrite the settings object already given to the constructor.
  */
 HorizGauge.prototype.draw = function (settings) {
     if (settings) {
@@ -21453,15 +21455,14 @@ HorizGauge.prototype.draw = function (settings) {
 }
 
 /**
- * Clear the gauge from the provided <code>settings.svg</code> DOM tree element
+ * Clear the gauge.
  */
 HorizGauge.prototype.remove = function () {
     removeGauge(this.settings);
 }
 
 /**
- * Draw the gauge inside of the provided <code>settings.svg</code> DOM tree element 
- * and return the result as a string which can be assigned to the SRC attribute of an HTML IMG tag.
+ * Draw the gauge and return the result as a string which can be assigned to the SRC attribute of an HTML IMG tag.
  * @returns {string}
  */
 HorizGauge.prototype.imageSource = function () {
@@ -21471,8 +21472,7 @@ HorizGauge.prototype.imageSource = function () {
 }
 
 /**
- * Draw the gauge inside of the provided <code>settings.svg</code> DOM tree element 
- * and return the result as a SVG tag string.
+ * Draw the gauge and return the result as a SVG tag string.
  * @returns {string}
  */
 HorizGauge.prototype.svgSource = function () {
