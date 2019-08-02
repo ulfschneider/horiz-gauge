@@ -21297,12 +21297,14 @@ function drawGauge(settings) {
         .style('fill', settings.emptyColor);
 
     //progress bar
-    settings.g.append('rect')
-        .attr('x', settings.borderWidth)
-        .attr('y', settings.borderWidth)
-        .attr('width', calcHorizFractionPosition(settings))
-        .attr('height', settings.progressHeight)
-        .style('fill', settings.fraction > 1.0 ? settings.fractionExceedColor : settings.fractionColor);
+    if (settings.fraction > 0.0) {
+        settings.g.append('rect')
+            .attr('x', settings.borderWidth)
+            .attr('y', settings.borderWidth)
+            .attr('width', calcHorizFractionPosition(settings))
+            .attr('height', settings.progressHeight)
+            .style('fill', settings.fraction > 1.0 ? settings.fractionExceedColor : settings.fractionColor);
+    }
 
     //progress bar dividers
     drawDividers(settings);
