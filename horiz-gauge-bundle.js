@@ -1806,7 +1806,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })));
 
 },{}],6:[function(require,module,exports){
-// https://d3js.org/d3-color/ v1.2.3 Copyright 2018 Mike Bostock
+// https://d3js.org/d3-color/ v1.2.8 Copyright 2019 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -2060,9 +2060,9 @@ define(Rgb, rgb, extend(Color, {
     return this;
   },
   displayable: function() {
-    return (0 <= this.r && this.r <= 255)
-        && (0 <= this.g && this.g <= 255)
-        && (0 <= this.b && this.b <= 255)
+    return (-0.5 <= this.r && this.r < 255.5)
+        && (-0.5 <= this.g && this.g < 255.5)
+        && (-0.5 <= this.b && this.b < 255.5)
         && (0 <= this.opacity && this.opacity <= 1);
   },
   hex: function() {
@@ -2167,7 +2167,7 @@ function hsl2rgb(h, m1, m2) {
 var deg2rad = Math.PI / 180;
 var rad2deg = 180 / Math.PI;
 
-// https://beta.observablehq.com/@mbostock/lab-and-rgb
+// https://observablehq.com/@mbostock/lab-and-rgb
 var K = 18,
     Xn = 0.96422,
     Yn = 1,
@@ -2179,11 +2179,7 @@ var K = 18,
 
 function labConvert(o) {
   if (o instanceof Lab) return new Lab(o.l, o.a, o.b, o.opacity);
-  if (o instanceof Hcl) {
-    if (isNaN(o.h)) return new Lab(o.l, 0, 0, o.opacity);
-    var h = o.h * deg2rad;
-    return new Lab(o.l, Math.cos(h) * o.c, Math.sin(h) * o.c, o.opacity);
-  }
+  if (o instanceof Hcl) return hcl2lab(o);
   if (!(o instanceof Rgb)) o = rgbConvert(o);
   var r = rgb2lrgb(o.r),
       g = rgb2lrgb(o.g),
@@ -2253,7 +2249,7 @@ function rgb2lrgb(x) {
 function hclConvert(o) {
   if (o instanceof Hcl) return new Hcl(o.h, o.c, o.l, o.opacity);
   if (!(o instanceof Lab)) o = labConvert(o);
-  if (o.a === 0 && o.b === 0) return new Hcl(NaN, 0, o.l, o.opacity);
+  if (o.a === 0 && o.b === 0) return new Hcl(NaN, 0 < o.l && o.l < 100 ? 0 : NaN, o.l, o.opacity);
   var h = Math.atan2(o.b, o.a) * rad2deg;
   return new Hcl(h < 0 ? h + 360 : h, Math.sqrt(o.a * o.a + o.b * o.b), o.l, o.opacity);
 }
@@ -2273,6 +2269,12 @@ function Hcl(h, c, l, opacity) {
   this.opacity = +opacity;
 }
 
+function hcl2lab(o) {
+  if (isNaN(o.h)) return new Lab(o.l, 0, 0, o.opacity);
+  var h = o.h * deg2rad;
+  return new Lab(o.l, Math.cos(h) * o.c, Math.sin(h) * o.c, o.opacity);
+}
+
 define(Hcl, hcl, extend(Color, {
   brighter: function(k) {
     return new Hcl(this.h, this.c, this.l + K * (k == null ? 1 : k), this.opacity);
@@ -2281,7 +2283,7 @@ define(Hcl, hcl, extend(Color, {
     return new Hcl(this.h, this.c, this.l - K * (k == null ? 1 : k), this.opacity);
   },
   rgb: function() {
-    return labConvert(this).rgb();
+    return hcl2lab(this).rgb();
   }
 }));
 
@@ -4699,7 +4701,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })));
 
 },{}],15:[function(require,module,exports){
-// https://d3js.org/d3-geo/ v1.11.3 Copyright 2018 Mike Bostock
+// https://d3js.org/d3-geo/ v1.11.6 Copyright 2019 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-array')) :
 typeof define === 'function' && define.amd ? define(['exports', 'd3-array'], factory) :
@@ -4984,6 +4986,9 @@ var boundsStream = {
     else if (deltaSum > epsilon) phi1 = 90;
     else if (deltaSum < -epsilon) phi0 = -90;
     range[0] = lambda0$1, range[1] = lambda1;
+  },
+  sphere: function() {
+    lambda0$1 = -(lambda1 = 180), phi0 = -(phi1 = 90);
   }
 };
 
@@ -5554,8 +5559,15 @@ function link(array) {
 
 var sum = adder();
 
+function longitude(point) {
+  if (abs(point[0]) <= pi)
+    return point[0];
+  else
+    return sign(point[0]) * ((abs(point[0]) + pi) % tau - pi);
+}
+
 function polygonContains(polygon, point) {
-  var lambda = point[0],
+  var lambda = longitude(point),
       phi = point[1],
       sinPhi = sin(phi),
       normal = [sin(lambda), -cos(lambda), 0],
@@ -5572,14 +5584,14 @@ function polygonContains(polygon, point) {
     var ring,
         m,
         point0 = ring[m - 1],
-        lambda0 = point0[0],
+        lambda0 = longitude(point0),
         phi0 = point0[1] / 2 + quarterPi,
         sinPhi0 = sin(phi0),
         cosPhi0 = cos(phi0);
 
     for (var j = 0; j < m; ++j, lambda0 = lambda1, sinPhi0 = sinPhi1, cosPhi0 = cosPhi1, point0 = point1) {
       var point1 = ring[j],
-          lambda1 = point1[0],
+          lambda1 = longitude(point1),
           phi1 = point1[1] / 2 + quarterPi,
           sinPhi1 = sin(phi1),
           cosPhi1 = cos(phi1),
@@ -6371,10 +6383,23 @@ function containsPoint(coordinates, point) {
 }
 
 function containsLine(coordinates, point) {
-  var ab = distance(coordinates[0], coordinates[1]),
-      ao = distance(coordinates[0], point),
-      ob = distance(point, coordinates[1]);
-  return ao + ob <= ab + epsilon;
+  var ao, bo, ab;
+  for (var i = 0, n = coordinates.length; i < n; i++) {
+    bo = distance(coordinates[i], point);
+    if (bo === 0) return true;
+    if (i > 0) {
+      ab = distance(coordinates[i], coordinates[i - 1]);
+      if (
+        ab > 0 &&
+        ao <= ab &&
+        bo <= ab &&
+        (ao + bo - ab) * (1 - Math.pow((ao - bo) / ab, 2)) < epsilon2 * ab
+      )
+        return true;
+    }
+    ao = bo;
+  }
+  return false;
 }
 
 function containsPolygon(coordinates, point) {
@@ -18717,7 +18742,7 @@ var d3Transition = require('d3-transition');
 var d3Voronoi = require('d3-voronoi');
 var d3Zoom = require('d3-zoom');
 
-var version = "5.9.2";
+var version = "5.9.7";
 
 Object.keys(d3Array).forEach(function (key) { exports[key] = d3Array[key]; });
 Object.keys(d3Axis).forEach(function (key) { exports[key] = d3Axis[key]; });
@@ -21032,7 +21057,7 @@ function validateSettings(settings) {
         throw "No settings";
     }
 
-    if (settings.id) {
+    if (!settings.svg && settings.id) {
         settings.svg = document.getElementById(settings.id);
     }
 
@@ -21203,7 +21228,7 @@ function drawMarkers(settings) {
 
         settings.g.append('line')
             .attr('x1', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
-            .attr('y1', marker.position ==  'bottom' ? settings.progressHeight + settings.borderWidth * 2 : 0)
+            .attr('y1', marker.position == 'bottom' ? settings.progressHeight + settings.borderWidth * 2 : 0)
             .attr('x2', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
             .attr('y2', marker.position == 'bottom' ? settings.progressHeight + settings.borderWidth * 2 + marker.distance : -marker.distance)
             .style('stroke-width', DIVIDER_STROKE_WIDTH)
@@ -21350,18 +21375,23 @@ Install in your Node project with
  * @constructor
  * @param {Object} settings - The configuration object for the gauge. 
  * All data for the gauge is provided with this object. 
- * @param {String} settings.id - Id of the svg domtree element to bind the gauge to.
- * @param {Number} [settings.fraction] - Progress indication for the gauge. A value of 0 is indicating no progress, 1.0 is indicating completion. Default is <pre>0.0</pre>
- * @param {String} [settings.fractionLabel] - A label to show for the progress fraction. Default is <pre>''</pre>.
- * @param {String} [settings.fractionColor] - The color for the fraction indication. Default is <pre>'#222'</pre>
+* @param {Object} settings.svg - The DOM tree element, wich must be an svg tag.
+ * The gauge will be attached to this DOM tree element. Example:
+ * <pre>settings.svg = document.getElementById('gauge');</pre>
+ * <code>'gauge'</code> is the id of a svg tag.
+ * @param {String} [settings.id] - The id of a domtree svg element, to which the gauge will be bound to. 
+ * The id will only be used in case settings.svg is not provided.
+ * @param {Number} [settings.fraction] - Progress indication for the gauge. A value of 0 is indicating no progress, 1.0 is indicating completion. Default is <code>0.0</code>
+ * @param {String} [settings.fractionLabel] - A label to show for the progress fraction. Default is <code>''</code>.
+ * @param {String} [settings.fractionColor] - The color for the fraction indication. Default is <code>'#222'</code>
  * @param {String} [settings.fractionExceedColor] - The color to use in case fraction > 1.0.
- * @param {String} [settings.emptyColor] - Color for the non-progress area of the gauge. Default is <pre>borderColor</pre>
- * @param {Number} [settings.progressWidth] - Width in pixels for the progress gauge without borders and margins. Default is <pre>200</pre>.
- * @param {Number} [settings.progressHeight] - Height in pixels for the progress gauge without borders and margins. Default is <pre>fontSize + 2</pre>.
- * @param {String} [settings.borderColor] - Color of the border of the progress gauge. Default is <pre>'#ccc'</pre>
- * @param {Number} [settings.borderWidth] - Width in pixels for the border of the progress gauge. Defautl is <pre>0</pre>
- * @param {Number} [settings.fontSize] - Size in pixels for all labels. Default is <pre>16</pre>
- * @param {String} [settings.fontFamily] - The font to use for all labels. Default is <pre>sans-serif</pre>.
+ * @param {String} [settings.emptyColor] - Color for the non-progress area of the gauge. Default is <code>borderColor</code>
+ * @param {Number} [settings.progressWidth] - Width in pixels for the progress gauge without borders and margins. Default is <code>200</code>.
+ * @param {Number} [settings.progressHeight] - Height in pixels for the progress gauge without borders and margins. Default is <code>fontSize + 2</code>.
+ * @param {String} [settings.borderColor] - Color of the border of the progress gauge. Default is <code>'#ccc'</code>
+ * @param {Number} [settings.borderWidth] - Width in pixels for the border of the progress gauge. Default is <code>0</code>
+ * @param {Number} [settings.fontSize] - Size in pixels for all labels. Default is <code>16</code>
+ * @param {String} [settings.fontFamily] - The font to use for all labels. Default is <code>sans-serif</code>.
  * @param {{top: Number, right: Number, bottom: Number, right: Number}} [settings.margin] - The margin for the gauge. Markers and labels are drawn inside of the margin.
  * Default values are:
  * <pre>settings.margin = {
@@ -21371,7 +21401,7 @@ Install in your Node project with
  * left: 0 }
  * </pre>
  * @param {{label: String, color: String, textAnchor: String}} [settings.leftLabel] - A label to put to the left of the progress gauge. 
- * Must fit into the left margin. Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>. 
+ * Must fit into the left margin. Allowed values for <code>textAnchor</code> are <code>'start', 'middle', 'end'</code>. 
  * Default values are:
  * <pre>settings.leftLabel = {
  *  label: '',
@@ -21380,7 +21410,7 @@ Install in your Node project with
  * }
  * </pre>
  * @param {{label: String, color: String, textAnchor: String}} [settings.rightLabel] - A label to put to the right of the progress gauge. 
- * Must fit into the right margin. Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>. 
+ * Must fit into the right margin. Allowed values for <code>textAnchor</code> are <code>'start', 'middle', 'end'</code>. 
  * Default values are:
  * <pre>settings.rightLabel = {
  *  label: '',
@@ -21390,8 +21420,8 @@ Install in your Node project with
  * </pre> 
  * @param {{fraction: Number, label: String, color: String, position: String, distance: Number, textAnchor: String}[]} [settings.markers] - Highlight fractions outside of the gauge.
  * Each marker is an object with a fraction for the marker and some optional settings. A marker must fit into the margins of the gauge.
- * Allowed values for <pre>position</pre> are <pre>'top', 'bottom'</pre>
- * Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>
+ * Allowed values for <code>position</code> are <code>'top', 'bottom'</code>
+ * Allowed values for <code>textAnchor</code> are <code>'start', 'middle', 'end'</code>
  * Example:
  * <pre>settings.markers = [
  * { fraction: 0.0, label: 'G1', distance: 20 },
@@ -21399,7 +21429,7 @@ Install in your Node project with
  * { fraction: 0.8, label: 'G3', color: 'lightgray', position: 'bottom', textAnchor: 'start'}];</pre>
  * @param {{fraction: Number, color: String}}[] [settings.dividers] - Highlight fractions inside of the gauge.
  * Each divider is an object with a fraction and an optional color.
- * The default for <pre>color</pre> is <pre>emptyColor</pre>.
+ * The default for <code>color</code> is <code>emptyColor</code>.
  * Example:
  * <pre>settings.markers = [
  * { fraction: 0.1 },

@@ -42,18 +42,21 @@ Play with the settings of the horiz-gauge by visiting [http://htmlpreview.github
 
 -   `settings` **[Object][9]** The configuration object for the gauge. 
     All data for the gauge is provided with this object.
-    -   `settings.id` **[String][10]** Id of the svg domtree element to bind the gauge to.
-    -   `settings.fraction` **[Number][11]?** Progress indication for the gauge. A value of 0 is indicating no progress, 1.0 is indicating completion. Default is <pre>0.0</pre>
-    -   `settings.fractionLabel` **[String][10]?** A label to show for the progress fraction. Default is <pre>''</pre>.
-    -   `settings.fractionColor` **[String][10]?** The color for the fraction indication. Default is <pre>'#222'</pre>
+    -   `settings.svg` **[Object][9]** The DOM tree element, wich must be an svg tag.
+        The gauge will be attached to this DOM tree element. Example:<pre>settings.svg = document.getElementById('gauge');</pre><code>'gauge'</code> is the id of a svg tag.
+    -   `settings.id` **[String][10]?** The id of a domtree svg element, to which the gauge will be bound to. 
+        The id will only be used in case settings.svg is not provided.
+    -   `settings.fraction` **[Number][11]?** Progress indication for the gauge. A value of 0 is indicating no progress, 1.0 is indicating completion. Default is <code>0.0</code>
+    -   `settings.fractionLabel` **[String][10]?** A label to show for the progress fraction. Default is <code>''</code>.
+    -   `settings.fractionColor` **[String][10]?** The color for the fraction indication. Default is <code>'#222'</code>
     -   `settings.fractionExceedColor` **[String][10]?** The color to use in case fraction > 1.0.
-    -   `settings.emptyColor` **[String][10]?** Color for the non-progress area of the gauge. Default is <pre>borderColor</pre>
-    -   `settings.progressWidth` **[Number][11]?** Width in pixels for the progress gauge without borders and margins. Default is <pre>200</pre>.
-    -   `settings.progressHeight` **[Number][11]?** Height in pixels for the progress gauge without borders and margins. Default is <pre>fontSize + 2</pre>.
-    -   `settings.borderColor` **[String][10]?** Color of the border of the progress gauge. Default is <pre>'#ccc'</pre>
-    -   `settings.borderWidth` **[Number][11]?** Width in pixels for the border of the progress gauge. Defautl is <pre>0</pre>
-    -   `settings.fontSize` **[Number][11]?** Size in pixels for all labels. Default is <pre>16</pre>
-    -   `settings.fontFamily` **[String][10]?** The font to use for all labels. Default is <pre>sans-serif</pre>.
+    -   `settings.emptyColor` **[String][10]?** Color for the non-progress area of the gauge. Default is <code>borderColor</code>
+    -   `settings.progressWidth` **[Number][11]?** Width in pixels for the progress gauge without borders and margins. Default is <code>200</code>.
+    -   `settings.progressHeight` **[Number][11]?** Height in pixels for the progress gauge without borders and margins. Default is <code>fontSize + 2</code>.
+    -   `settings.borderColor` **[String][10]?** Color of the border of the progress gauge. Default is <code>'#ccc'</code>
+    -   `settings.borderWidth` **[Number][11]?** Width in pixels for the border of the progress gauge. Default is <code>0</code>
+    -   `settings.fontSize` **[Number][11]?** Size in pixels for all labels. Default is <code>16</code>
+    -   `settings.fontFamily` **[String][10]?** The font to use for all labels. Default is <code>sans-serif</code>.
     -   `settings.margin` **{top: [Number][11], right: [Number][11], bottom: [Number][11], right: [Number][11]}?** The margin for the gauge. Markers and labels are drawn inside of the margin.
         Default values are:<pre>settings.margin = {
         top: 0,
@@ -62,7 +65,7 @@ Play with the settings of the horiz-gauge by visiting [http://htmlpreview.github
         left: 0 }
         </pre>
     -   `settings.leftLabel` **{label: [String][10], color: [String][10], textAnchor: [String][10]}?** A label to put to the left of the progress gauge. 
-        Must fit into the left margin. Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>. 
+        Must fit into the left margin. Allowed values for <code>textAnchor</code> are <code>'start', 'middle', 'end'</code>. 
         Default values are:<pre>settings.leftLabel = {
          label: '',
          color: '#222',
@@ -70,7 +73,7 @@ Play with the settings of the horiz-gauge by visiting [http://htmlpreview.github
         }
         </pre>
     -   `settings.rightLabel` **{label: [String][10], color: [String][10], textAnchor: [String][10]}?** A label to put to the right of the progress gauge. 
-        Must fit into the right margin. Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>. 
+        Must fit into the right margin. Allowed values for <code>textAnchor</code> are <code>'start', 'middle', 'end'</code>. 
         Default values are:<pre>settings.rightLabel = {
          label: '',
          color: '#222',
@@ -79,15 +82,15 @@ Play with the settings of the horiz-gauge by visiting [http://htmlpreview.github
         </pre>
     -   `settings.markers` **[Array][12]&lt;{fraction: [Number][11], label: [String][10], color: [String][10], position: [String][10], distance: [Number][11], textAnchor: [String][10]}>?** Highlight fractions outside of the gauge.
         Each marker is an object with a fraction for the marker and some optional settings. A marker must fit into the margins of the gauge.
-        Allowed values for <pre>position</pre> are <pre>'top', 'bottom'</pre>
-        Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>
+        Allowed values for <code>position</code> are <code>'top', 'bottom'</code>
+        Allowed values for <code>textAnchor</code> are <code>'start', 'middle', 'end'</code>
         Example:<pre>settings.markers = [
         { fraction: 0.0, label: 'G1', distance: 20 },
         { fraction: 0.2, label: 'G2' },
         { fraction: 0.8, label: 'G3', color: 'lightgray', position: 'bottom', textAnchor: 'start'}];</pre>
 -   `null` **{fraction: [Number][11], color: [String][10]}?** [settings.dividers] - Highlight fractions inside of the gauge.
     Each divider is an object with a fraction and an optional color.
-    The default for <pre>color</pre> is <pre>emptyColor</pre>.
+    The default for <code>color</code> is <code>emptyColor</code>.
     Example:<pre>settings.markers = [
     { fraction: 0.1 },
     { fraction: 0.2, color: 'green' },

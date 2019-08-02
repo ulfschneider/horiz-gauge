@@ -52,7 +52,7 @@ function validateSettings(settings) {
         throw "No settings";
     }
 
-    if (settings.id) {
+    if (!settings.svg && settings.id) {
         settings.svg = document.getElementById(settings.id);
     }
 
@@ -223,7 +223,7 @@ function drawMarkers(settings) {
 
         settings.g.append('line')
             .attr('x1', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
-            .attr('y1', marker.position ==  'bottom' ? settings.progressHeight + settings.borderWidth * 2 : 0)
+            .attr('y1', marker.position == 'bottom' ? settings.progressHeight + settings.borderWidth * 2 : 0)
             .attr('x2', settings.borderWidth + calcHorizFractionPosition(settings, fraction))
             .attr('y2', marker.position == 'bottom' ? settings.progressHeight + settings.borderWidth * 2 + marker.distance : -marker.distance)
             .style('stroke-width', DIVIDER_STROKE_WIDTH)
@@ -370,18 +370,23 @@ Install in your Node project with
  * @constructor
  * @param {Object} settings - The configuration object for the gauge. 
  * All data for the gauge is provided with this object. 
- * @param {String} settings.id - Id of the svg domtree element to bind the gauge to.
- * @param {Number} [settings.fraction] - Progress indication for the gauge. A value of 0 is indicating no progress, 1.0 is indicating completion. Default is <pre>0.0</pre>
- * @param {String} [settings.fractionLabel] - A label to show for the progress fraction. Default is <pre>''</pre>.
- * @param {String} [settings.fractionColor] - The color for the fraction indication. Default is <pre>'#222'</pre>
+* @param {Object} settings.svg - The DOM tree element, wich must be an svg tag.
+ * The gauge will be attached to this DOM tree element. Example:
+ * <pre>settings.svg = document.getElementById('gauge');</pre>
+ * <code>'gauge'</code> is the id of a svg tag.
+ * @param {String} [settings.id] - The id of a domtree svg element, to which the gauge will be bound to. 
+ * The id will only be used in case settings.svg is not provided.
+ * @param {Number} [settings.fraction] - Progress indication for the gauge. A value of 0 is indicating no progress, 1.0 is indicating completion. Default is <code>0.0</code>
+ * @param {String} [settings.fractionLabel] - A label to show for the progress fraction. Default is <code>''</code>.
+ * @param {String} [settings.fractionColor] - The color for the fraction indication. Default is <code>'#222'</code>
  * @param {String} [settings.fractionExceedColor] - The color to use in case fraction > 1.0.
- * @param {String} [settings.emptyColor] - Color for the non-progress area of the gauge. Default is <pre>borderColor</pre>
- * @param {Number} [settings.progressWidth] - Width in pixels for the progress gauge without borders and margins. Default is <pre>200</pre>.
- * @param {Number} [settings.progressHeight] - Height in pixels for the progress gauge without borders and margins. Default is <pre>fontSize + 2</pre>.
- * @param {String} [settings.borderColor] - Color of the border of the progress gauge. Default is <pre>'#ccc'</pre>
- * @param {Number} [settings.borderWidth] - Width in pixels for the border of the progress gauge. Defautl is <pre>0</pre>
- * @param {Number} [settings.fontSize] - Size in pixels for all labels. Default is <pre>16</pre>
- * @param {String} [settings.fontFamily] - The font to use for all labels. Default is <pre>sans-serif</pre>.
+ * @param {String} [settings.emptyColor] - Color for the non-progress area of the gauge. Default is <code>borderColor</code>
+ * @param {Number} [settings.progressWidth] - Width in pixels for the progress gauge without borders and margins. Default is <code>200</code>.
+ * @param {Number} [settings.progressHeight] - Height in pixels for the progress gauge without borders and margins. Default is <code>fontSize + 2</code>.
+ * @param {String} [settings.borderColor] - Color of the border of the progress gauge. Default is <code>'#ccc'</code>
+ * @param {Number} [settings.borderWidth] - Width in pixels for the border of the progress gauge. Default is <code>0</code>
+ * @param {Number} [settings.fontSize] - Size in pixels for all labels. Default is <code>16</code>
+ * @param {String} [settings.fontFamily] - The font to use for all labels. Default is <code>sans-serif</code>.
  * @param {{top: Number, right: Number, bottom: Number, right: Number}} [settings.margin] - The margin for the gauge. Markers and labels are drawn inside of the margin.
  * Default values are:
  * <pre>settings.margin = {
@@ -391,7 +396,7 @@ Install in your Node project with
  * left: 0 }
  * </pre>
  * @param {{label: String, color: String, textAnchor: String}} [settings.leftLabel] - A label to put to the left of the progress gauge. 
- * Must fit into the left margin. Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>. 
+ * Must fit into the left margin. Allowed values for <code>textAnchor</code> are <code>'start', 'middle', 'end'</code>. 
  * Default values are:
  * <pre>settings.leftLabel = {
  *  label: '',
@@ -400,7 +405,7 @@ Install in your Node project with
  * }
  * </pre>
  * @param {{label: String, color: String, textAnchor: String}} [settings.rightLabel] - A label to put to the right of the progress gauge. 
- * Must fit into the right margin. Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>. 
+ * Must fit into the right margin. Allowed values for <code>textAnchor</code> are <code>'start', 'middle', 'end'</code>. 
  * Default values are:
  * <pre>settings.rightLabel = {
  *  label: '',
@@ -410,8 +415,8 @@ Install in your Node project with
  * </pre> 
  * @param {{fraction: Number, label: String, color: String, position: String, distance: Number, textAnchor: String}[]} [settings.markers] - Highlight fractions outside of the gauge.
  * Each marker is an object with a fraction for the marker and some optional settings. A marker must fit into the margins of the gauge.
- * Allowed values for <pre>position</pre> are <pre>'top', 'bottom'</pre>
- * Allowed values for <pre>textAnchor</pre> are <pre>'start', 'middle', 'end'</pre>
+ * Allowed values for <code>position</code> are <code>'top', 'bottom'</code>
+ * Allowed values for <code>textAnchor</code> are <code>'start', 'middle', 'end'</code>
  * Example:
  * <pre>settings.markers = [
  * { fraction: 0.0, label: 'G1', distance: 20 },
@@ -419,7 +424,7 @@ Install in your Node project with
  * { fraction: 0.8, label: 'G3', color: 'lightgray', position: 'bottom', textAnchor: 'start'}];</pre>
  * @param {{fraction: Number, color: String}}[] [settings.dividers] - Highlight fractions inside of the gauge.
  * Each divider is an object with a fraction and an optional color.
- * The default for <pre>color</pre> is <pre>emptyColor</pre>.
+ * The default for <code>color</code> is <code>emptyColor</code>.
  * Example:
  * <pre>settings.markers = [
  * { fraction: 0.1 },
