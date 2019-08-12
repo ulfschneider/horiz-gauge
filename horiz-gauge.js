@@ -87,7 +87,7 @@ function validateSettings(settings) {
         settings.margin.left = settings.margin.left ? settings.margin.left : 0;
         settings.margin.top = settings.margin.top ? settings.margin.top : 0;
         settings.margin.right = settings.margin.right ? settings.margin.right : 0;
-        settings.margin.boÌttom = settings.margin.bottom ? settings.margin.bottom : 0;
+        settings.margin.bottom = settings.margin.bottom ? settings.margin.bottom : 0;
     }
     if (_.isUndefined(settings.leftLabel) || _.isEmpty(settings.leftLabel)) {
         settings.leftLabel = {
@@ -143,6 +143,11 @@ function calcHorizFractionPosition(settings, fraction) {
     return Math.max(DIVIDER_STROKE_WIDTH / 2, Math.min(settings.progressWidth * f, settings.progressWidth - DIVIDER_STROKE_WIDTH / 2));
 }
 
+function calcGaugeHorizFractionPosition(settings, fraction) {
+    let f = _.isUndefined(fraction) ? settings.fraction : fraction;
+    return Math.min(settings.progressWidth * f, settings.progressWidth);
+}
+
 function formatPercentage(percentage) {
     let fixed = 0;
     if (percentage > 0 && percentage < 0.01) {
@@ -192,8 +197,15 @@ function drawProgressLabel(settings) {
         .attr('font-family', settings.fontFamily)
         .attr('font-size', settings.fontSize);
 
-    let length = fractionLabel.node()
-        .getComputedTextLength();
+    let length;
+    try {
+        length = fractionLabel.node()
+            .getComputedTextLength();
+    } catch (e) {
+        //JSDOM is not able to operate with getComputedTextLength()
+        //therefore this code is not going to run in the tests
+    }
+
     let fractionPos = calcHorizFractionPosition(settings);
     if (fractionPos + settings.fontSize / 4 + length > settings.progressWidth) {
         fractionLabel.attr('x', settings.borderWidth + fractionPos - length - settings.fontSize / 4)
@@ -202,11 +214,15 @@ function drawProgressLabel(settings) {
         fractionLabel.attr('x', fractionPos + settings.borderWidth + settings.fontSize / 4)
             .attr('fill', settings.fractionColor);
     }
+
 }
 
 function drawMarkers(settings) {
     const determineLength = function (textAnchor, label) {
-        let length = label.node().getComputedTextLength();
+        let length = 0;
+        try {
+            length = label.node().getComputedTextLength();
+        } catch (t) { };
         if ('start' == textAnchor || 'end' == textAnchor) {
             return length;
         } else {
@@ -296,7 +312,7 @@ function drawGauge(settings) {
         settings.g.append('rect')
             .attr('x', settings.borderWidth)
             .attr('y', settings.borderWidth)
-            .attr('width', calcHorizFractionPosition(settings))
+            .attr('width', calcGaugeHorizFractionPosition(settings))
             .attr('height', settings.progressHeight)
             .style('fill', settings.fraction > 1.0 ? settings.fractionExceedColor : settings.fractionColor);
     }
@@ -367,7 +383,7 @@ Install in your Node project with
  * <pre>
  * let diagram = gauge(settings);
  * </pre> 
- * Play with the settings of the horiz-gauge by visiting https://htmlpreview.github.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html
+ * Play with the settings of the horiz-gauge by visiting [horiz-gauge playground](https://htmlpreview.github.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html)
  * 
  * @constructor
  * @param {Object} settings - The configuration object for the gauge. 

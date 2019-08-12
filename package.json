@@ -11,6 +11,11 @@
     "type": "git",
     "url": "git+https://github.com/ulfschneider/horiz-gauge.git"
   },
+  "jest": {
+    "verbose": true,
+    "testURL": "http://localhost/",
+    "collectCoverage": true
+  },  
   "keywords": [
     "SVG",
     "D3",
