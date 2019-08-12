@@ -36,7 +36,7 @@ Create the new gauge objects via
 let diagram = gauge(settings);
 </pre> 
 
-Play with the settings of the horiz-gauge by visiting [https://htmlpreview.github.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html][8]
+Play with the settings of the horiz-gauge by visiting [horiz-gauge playground][8]
 
 ### Parameters
 
