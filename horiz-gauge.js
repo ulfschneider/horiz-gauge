@@ -361,7 +361,8 @@ function drawGauge(settings) {
 }
 
 /**
-Install in your Node project with 
+ * Play with the settings of the horiz-gauge by visiting [horiz-gauge playground](https://htmlpreview.github.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html)
+ * Install in your Node project with 
  * <pre>
  * npm i horiz-gauge
  * </pre>
@@ -383,7 +384,6 @@ Install in your Node project with
  * <pre>
  * let diagram = gauge(settings);
  * </pre> 
- * Play with the settings of the horiz-gauge by visiting [horiz-gauge playground](https://htmlpreview.github.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html)
  * 
  * @constructor
  * @param {Object} settings - The configuration object for the gauge. 

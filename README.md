@@ -12,6 +12,7 @@
 
 ## HorizGauge
 
+Play with the settings of the horiz-gauge by visiting [horiz-gauge playground][8]
 Install in your Node project with 
 
 <pre>
@@ -34,9 +35,7 @@ Create the new gauge objects via
 
 <pre>
 let diagram = gauge(settings);
-</pre> 
-
-Play with the settings of the horiz-gauge by visiting [horiz-gauge playground][8]
+</pre>
 
 ### Parameters
 
