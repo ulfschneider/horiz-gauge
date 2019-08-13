@@ -12,7 +12,11 @@
 
 ## HorizGauge
 
-Play with the settings of the horiz-gauge by visiting [horiz-gauge playground][8]
+Draw a SVG horizontal gauge.
+
+<img src="https://raw.githubusercontent.com/ulfschneider/horizontal-gauge/master/cfd.png"/>
+
+Play with the settings of the horiz-gauge by visiting the [horiz-gauge playground][8]
 
 Install in your Node project with 
 

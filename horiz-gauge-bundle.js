@@ -21366,7 +21366,11 @@ function drawGauge(settings) {
 }
 
 /**
- * Play with the settings of the horiz-gauge by visiting [horiz-gauge playground](https://htmlpreview.github.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html)
+ * Draw a SVG horizontal gauge.
+ * 
+ * <img src="https://raw.githubusercontent.com/ulfschneider/horizontal-gauge/master/cfd.png"/>
+ *
+ * Play with the settings of the horiz-gauge by visiting the [horiz-gauge playground](https://htmlpreview.github.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html)
  *
  * Install in your Node project with 
  * <pre>
