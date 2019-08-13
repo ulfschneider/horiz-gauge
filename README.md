@@ -14,7 +14,7 @@
 
 Draw a SVG horizontal gauge.
 
-<img src="https://raw.githubusercontent.com/ulfschneider/horizontal-gauge/master/cfd.png"/>
+<img src="https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge.png?raw=true"/>
 
 Play with the settings of the horiz-gauge by visiting the [horiz-gauge playground][8]
 
