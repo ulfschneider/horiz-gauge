@@ -365,7 +365,7 @@ function drawGauge(settings) {
  * 
  * <img src="https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge.png?raw=true"/>
  *
- * Play with the settings of the horiz-gauge by visiting the [horiz-gauge playground](https://htmlpreview.github.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html)
+ * Play with the settings of the horiz-gauge by visiting the [horiz-gauge playground](https://htmlpreview.github.io/?https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge-playground.html).
  *
  * Install in your Node project with 
  * <pre>

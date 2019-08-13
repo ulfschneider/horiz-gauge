@@ -16,7 +16,7 @@ Draw a SVG horizontal gauge.
 
 <img src="https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge.png?raw=true"/>
 
-Play with the settings of the horiz-gauge by visiting the [horiz-gauge playground][8]
+Play with the settings of the horiz-gauge by visiting the [horiz-gauge playground][8].
 
 Install in your Node project with 
 
