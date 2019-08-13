@@ -361,7 +361,7 @@ function drawGauge(settings) {
 }
 
 /**
- * Draw a SVG horizontal gauge.
+ * Draw a horizontal svg gauge.
  * 
  * <img src="https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge.png?raw=true"/>
  *
@@ -410,7 +410,7 @@ function drawGauge(settings) {
  * @param {Number} [settings.borderWidth] - Width in pixels for the border of the progress gauge. Default is <code>0</code>
  * @param {Number} [settings.fontSize] - Size in pixels for all labels. Default is <code>16</code>
  * @param {String} [settings.fontFamily] - The font to use for all labels. Default is <code>sans-serif</code>.
- * @param {{top: Number, right: Number, bottom: Number, right: Number}} [settings.margin] - The margin for the gauge. Markers and labels are drawn inside of the margin.
+ * @param {{top: Number, right: Number, bottom: Number, left: Number}} [settings.margin] - The margin for the gauge. Markers and labels are drawn inside of the margin.
  * Default values are:
  * <pre>settings.margin = {
  * top: 0,
@@ -445,7 +445,7 @@ function drawGauge(settings) {
  * { fraction: 0.0, label: 'G1', distance: 20 },
  * { fraction: 0.2, label: 'G2' },
  * { fraction: 0.8, label: 'G3', color: 'lightgray', position: 'bottom', textAnchor: 'start'}];</pre>
- * @param {{fraction: Number, color: String}}[] [settings.dividers] - Highlight fractions inside of the gauge.
+ * @param {{fraction: Number, color: String}[]} [settings.dividers] - Highlight fractions inside of the gauge.
  * Each divider is an object with a fraction and an optional color.
  * The default for <code>color</code> is <code>emptyColor</code>.
  * Example:

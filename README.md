@@ -12,7 +12,7 @@
 
 ## HorizGauge
 
-Draw a SVG horizontal gauge.
+Draw a horizontal svg gauge.
 
 <img src="https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge.png?raw=true"/>
 
@@ -61,7 +61,7 @@ let diagram = gauge(settings);
     -   `settings.borderWidth` **[Number][11]?** Width in pixels for the border of the progress gauge. Default is <code>0</code>
     -   `settings.fontSize` **[Number][11]?** Size in pixels for all labels. Default is <code>16</code>
     -   `settings.fontFamily` **[String][10]?** The font to use for all labels. Default is <code>sans-serif</code>.
-    -   `settings.margin` **{top: [Number][11], right: [Number][11], bottom: [Number][11], right: [Number][11]}?** The margin for the gauge. Markers and labels are drawn inside of the margin.
+    -   `settings.margin` **{top: [Number][11], right: [Number][11], bottom: [Number][11], left: [Number][11]}?** The margin for the gauge. Markers and labels are drawn inside of the margin.
         Default values are:<pre>settings.margin = {
         top: 0,
         right: 0,
@@ -92,13 +92,13 @@ let diagram = gauge(settings);
         { fraction: 0.0, label: 'G1', distance: 20 },
         { fraction: 0.2, label: 'G2' },
         { fraction: 0.8, label: 'G3', color: 'lightgray', position: 'bottom', textAnchor: 'start'}];</pre>
--   `null` **{fraction: [Number][11], color: [String][10]}?** [settings.dividers] - Highlight fractions inside of the gauge.
-    Each divider is an object with a fraction and an optional color.
-    The default for <code>color</code> is <code>emptyColor</code>.
-    Example:<pre>settings.markers = [
-    { fraction: 0.1 },
-    { fraction: 0.2, color: 'green' },
-    { fraction: 0.8, color: 'red'}];</pre>
+    -   `settings.dividers` **[Array][12]&lt;{fraction: [Number][11], color: [String][10]}>?** Highlight fractions inside of the gauge.
+        Each divider is an object with a fraction and an optional color.
+        The default for <code>color</code> is <code>emptyColor</code>.
+        Example:<pre>settings.markers = [
+        { fraction: 0.1 },
+        { fraction: 0.2, color: 'green' },
+        { fraction: 0.8, color: 'red'}];</pre>
 
 ### draw
 
