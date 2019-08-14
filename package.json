@@ -4,8 +4,8 @@
   "description": "Draw a horizontal svg progress gauge",
   "main": "horiz-gauge.js",
   "scripts": {
-    "build": "browserify -r ./horiz-gauge.js:horiz-gauge -r autosize > ./horiz-gauge-bundle.js && documentation build horiz-gauge.js -f md > README.md",
-    "test": "jest && browserify -r ./horiz-gauge.js:horiz-gauge -r autosize > ./horiz-gauge-bundle.js && documentation build horiz-gauge.js -f md > README.md"
+    "test": "jest && browserify -r ./horiz-gauge.js:horiz-gauge -r autosize > ./horiz-gauge-bundle.js && documentation build horiz-gauge.js -f md > README.md",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"    
   },
   "repository": {
     "type": "git",

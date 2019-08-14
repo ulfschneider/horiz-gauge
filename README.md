@@ -12,6 +12,10 @@
 
 ## HorizGauge
 
+<a href='https://travis-ci.com/ulfschneider/horiz-gauge'><img src='https://travis-ci.com/ulfschneider/horiz-gauge.svg?branch=master'/></a>
+<a href='https://coveralls.io/github/ulfschneider/horiz-gauge?branch=master'><img src='https://coveralls.io/repos/github/ulfschneider/horiz-gauge/badge.svg?branch=master' /></a>
+<a href='https://badge.fury.io/js/horiz-gauge'><img src='https://badge.fury.io/js/horiz-gauge.svg' /></a>
+
 Draw a horizontal svg gauge.
 
 <img src="https://github.com/ulfschneider/horiz-gauge/blob/master/horiz-gauge.png?raw=true"/>
