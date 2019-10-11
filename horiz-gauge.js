@@ -252,9 +252,11 @@ function drawProgressLabel(settings) {
     }
 
     let fractionPos = calcHorizFractionPosition(settings);
-    if (fractionPos + settings.fontSize / 4 + length > settings.progressWidth) {
-        fractionLabel.attr('x', settings.borderWidth + fractionPos - length - settings.fontSize / 4)
-            .attr('fill', settings.fractionLabelColor);
+    if (settings.emptyPattern || fractionPos + settings.fontSize / 4 + length > settings.progressWidth) {
+        if (fractionPos - length - settings.fontSize / 4 > settings.borderWidth) {
+            fractionLabel.attr('x', settings.borderWidth + fractionPos - length - settings.fontSize / 4)
+                .attr('fill', settings.fractionLabelColor);
+        }
     } else {
         fractionLabel.attr('x', fractionPos + settings.borderWidth + settings.fontSize / 4)
             .attr('fill', settings.fractionColor);
