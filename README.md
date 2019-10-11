@@ -59,6 +59,7 @@ let diagram = gauge(settings);
     -   `settings.fractionColor` **[String][10]?** The color for the fraction indication. Default is <code>'#222'</code>
     -   `settings.fractionExceedColor` **[String][10]?** The color to use in case fraction > 1.0.
     -   `settings.emptyColor` **[String][10]?** Color for the non-progress area of the gauge. Default is <code>borderColor</code>
+    -   `settings.emptyPattern` **[Boolean][12]?** When true, the empty area will be a pattern made of <code>fractionColor</code> and <code>emptyColor</code>
     -   `settings.progressWidth` **[Number][11]?** Width in pixels for the progress gauge without borders and margins. Default is <code>200</code>.
     -   `settings.progressHeight` **[Number][11]?** Height in pixels for the progress gauge without borders and margins. Default is <code>fontSize + 2</code>.
     -   `settings.borderColor` **[String][10]?** Color of the border of the progress gauge. Default is <code>'#ccc'</code>
@@ -88,7 +89,7 @@ let diagram = gauge(settings);
          textAnchor: 'start'
         }
         </pre>
-    -   `settings.markers` **[Array][12]&lt;{fraction: [Number][11], label: [String][10], color: [String][10], position: [String][10], distance: [Number][11], textAnchor: [String][10]}>?** Highlight fractions outside of the gauge.
+    -   `settings.markers` **[Array][13]&lt;{fraction: [Number][11], label: [String][10], color: [String][10], position: [String][10], distance: [Number][11], textAnchor: [String][10]}>?** Highlight fractions outside of the gauge.
         Each marker is an object with a fraction for the marker and some optional settings. A marker must fit into the margins of the gauge.
         Allowed values for <code>position</code> are <code>'top', 'bottom'</code>
         Allowed values for <code>textAnchor</code> are <code>'start', 'middle', 'end'</code>
@@ -96,7 +97,7 @@ let diagram = gauge(settings);
         { fraction: 0.0, label: 'G1', distance: 20 },
         { fraction: 0.2, label: 'G2' },
         { fraction: 0.8, label: 'G3', color: 'lightgray', position: 'bottom', textAnchor: 'start'}];</pre>
-    -   `settings.dividers` **[Array][12]&lt;{fraction: [Number][11], color: [String][10]}>?** Highlight fractions inside of the gauge.
+    -   `settings.dividers` **[Array][13]&lt;{fraction: [Number][11], color: [String][10]}>?** Highlight fractions inside of the gauge.
         Each divider is an object with a fraction and an optional color.
         The default for <code>color</code> is <code>emptyColor</code>.
         Example:<pre>settings.markers = [
@@ -151,4 +152,6 @@ Returns **[string][10]**
 
 [11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

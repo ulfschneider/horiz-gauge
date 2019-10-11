@@ -21012,7 +21012,7 @@ const DIVIDER_STROKE_WIDTH = 1;
 
 function equalsIgnoreCase(a, b) {
     if (a && b) {
-        return a.toLowerCase() == b.toLowerCase();
+        return String(a).toLowerCase() == String(b).toLowerCase();
     } else {
         return false;
     }
@@ -21065,8 +21065,6 @@ function validateSettings(settings) {
         throw "No svg";
     }
 
-    settings.d3svg = d3.select(settings.svg);
-
     settings.fontSize = settings.fontSize ? settings.fontSize : 16;
     settings.fontFamily = settings.fontFamily ? settings.fontFamily : 'sans-serif';
     settings.fraction = settings.fraction ? settings.fraction : 0.0;
@@ -21074,8 +21072,12 @@ function validateSettings(settings) {
     settings.progressHeight = settings.progressHeight ? settings.progressHeight : settings.fontSize + 2;
     settings.borderColor = settings.borderColor ? settings.borderColor : '#ccc';
     settings.emptyColor = settings.emptyColor ? settings.emptyColor : settings.borderColor;
-    settings.borderWidth = _.isNumber(settings.borderWidth) ? settings.borderWidth : 0;
 
+    if (settings.emptyPattern) {
+        settings.emptyPattern = equalsIgnoreCase(settings.emptyPattern, 'false') ? false : true;
+    }
+
+    settings.borderWidth = _.isNumber(settings.borderWidth) ? settings.borderWidth : 0;
     settings.fractionColor = settings.fractionColor ? settings.fractionColor : '#222';
     settings.fractionExceedColor = settings.fractionExceedColor ? settings.fractionExceedColor : 'red';
     settings.fractionLabelColor = settings.fractionLabelColor ? settings.fractionLabelColor : 'white';
@@ -21141,6 +21143,49 @@ function validateSettings(settings) {
     }
 
     return settings;
+}
+
+function prepareSVG(settings) {
+    settings.d3svg = d3.select(settings.svg);
+    settings.defs = settings.d3svg.append('defs');
+    let pattern = settings.defs.append('pattern')
+        .attr('id', 'pattern-checkers')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', 4)
+        .attr('height', 4)
+        .attr('patternUnits', 'userSpaceOnUse');
+
+    const firstColor = settings.fraction > 1.0 ? settings.fractionExceedColor : settings.fractionColor;
+    const secondColor = settings.emptyColor;
+
+    pattern.append('rect')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', 2)
+        .attr('height', 2)
+        .style('fill', firstColor);
+
+    pattern.append('rect')
+        .attr('x', 2)
+        .attr('y', 0)
+        .attr('width', 2)
+        .attr('height', 2)
+        .style('fill', secondColor);
+
+    pattern.append('rect')
+        .attr('x', 0)
+        .attr('y', 2)
+        .attr('width', 2)
+        .attr('height', 2)
+        .style('fill', secondColor);
+
+    pattern.append('rect')
+        .attr('x', 2)
+        .attr('y', 2)
+        .attr('width', 2)
+        .attr('height', 2)
+        .style('fill', firstColor);
 }
 
 function calcHorizFractionPosition(settings, fraction) {
@@ -21287,6 +21332,7 @@ function removeGauge(settings) {
 function drawGauge(settings) {
     validateSettings(settings);
     removeGauge(settings);
+    prepareSVG(settings);
 
     let d3svg = settings.d3svg;
 
@@ -21305,12 +21351,13 @@ function drawGauge(settings) {
         .attr('height', settings.progressHeight + settings.borderWidth * 2)
         .style('fill', settings.borderColor);
 
+    //empty fill
     settings.g.append('rect')
         .attr('x', settings.borderWidth)
         .attr('y', settings.borderWidth)
         .attr('width', settings.progressWidth)
         .attr('height', settings.progressHeight)
-        .style('fill', settings.emptyColor);
+        .style('fill', settings.emptyPattern ? 'url(#pattern-checkers)' : settings.emptyColor);
 
     //progress bar
     if (settings.fraction > 0.0) {
@@ -21413,6 +21460,7 @@ function drawGauge(settings) {
  * @param {String} [settings.fractionColor] - The color for the fraction indication. Default is <code>'#222'</code>
  * @param {String} [settings.fractionExceedColor] - The color to use in case fraction > 1.0.
  * @param {String} [settings.emptyColor] - Color for the non-progress area of the gauge. Default is <code>borderColor</code>
+ * @param {Boolean} [settings.emptyPattern] - When true, the empty area will be a pattern made of <code>fractionColor</code> and <code>emptyColor</code>
  * @param {Number} [settings.progressWidth] - Width in pixels for the progress gauge without borders and margins. Default is <code>200</code>.
  * @param {Number} [settings.progressHeight] - Height in pixels for the progress gauge without borders and margins. Default is <code>fontSize + 2</code>.
  * @param {String} [settings.borderColor] - Color of the border of the progress gauge. Default is <code>'#ccc'</code>
