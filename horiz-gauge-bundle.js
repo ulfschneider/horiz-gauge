@@ -21309,14 +21309,15 @@ function drawMarkers(settings) {
 
             let fractionPos = calcHorizFractionPosition(settings, fraction);
 
-            if (fractionPos + determineLength(marker.textAnchor, label) > settings.progressWidth) {
+            if (marker.textAnchor !== 'end' && fractionPos + determineLength(marker.textAnchor, label) > settings.progressWidth) {
                 label.attr('x', settings.borderWidth + settings.progressWidth)
                     .attr('text-anchor', 'end');
             }
-            if (fractionPos - determineLength(marker.textAnchor, label) < 0) {
+            if (marker.textAnchor !== 'start' && fractionPos - determineLength(marker.textAnchor, label) < 0) {
                 label.attr('x', settings.borderWidth)
                     .attr('text-anchor', 'start');
             }
+
         }
     }
 }
